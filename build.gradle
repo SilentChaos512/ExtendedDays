@@ -1,0 +1,101 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+version = "0.1.0"
+def silentlib_version = "2.2.16"
+def buildNum = 0;
+group = "net.silentchaos512.extendeddays"
+archivesBaseName = "ExtendedDays-1.12"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+minecraft {
+    version = "1.12-14.21.1.2387"
+    runDir = "eclipse"
+
+    def versionFile = file('version.properties')
+    if (versionFile.canRead()) {
+        def Properties versionProps = new Properties()
+        
+        versionProps.load(new FileInputStream(versionFile))
+        
+        buildNum = versionProps['BUILD_NUM'].toInteger() + 1
+        
+        versionProps['BUILD_NUM'] = buildNum.toString()
+        versionProps.store(versionFile.newWriter(), null)
+    }
+
+    replace "@VERSION@", project.version
+    replace "SL_VERSION", silentlib_version
+    replace "BUILD_NUM = 0", "BUILD_NUM = " + buildNum
+
+    mappings = "snapshot_20170624"
+    useDepAts = true
+}
+
+repositories {
+    //mavenCentral()
+    maven {
+        name = "JEI"
+        url "http://dvs1.progwml6.com/files/maven"
+    }
+}
+
+jar {
+    classifier = buildNum
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = buildNum + '-sources'
+    from sourceSets.main.allSource
+}
+task deobfJar(type: Jar) {
+    from(sourceSets.main.output) {
+        classifier = buildNum + "-deobf"
+    }
+}
+
+artifacts {
+    archives sourcesJar
+    archives deobfJar
+}
+
+dependencies {
+    //deobfCompile "mezz.jei:jei_1.9.4:3.6.7.216"
+}
+
+sourceSets {
+    main {
+        java { srcDirs = ["$projectDir/common"] }
+        resources { srcDirs = ["$projectDir/resources"] }
+    }
+}
+
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}

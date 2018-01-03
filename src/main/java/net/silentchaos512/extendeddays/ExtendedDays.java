@@ -14,11 +14,17 @@ import net.silentchaos512.lib.registry.SRegistry;
 import net.silentchaos512.lib.util.LocalizationHelper;
 import net.silentchaos512.lib.util.LogHelper;
 
-@Mod(modid = ExtendedDays.MOD_ID, name = ExtendedDays.MOD_NAME)
+@Mod(modid = ExtendedDays.MOD_ID, name = ExtendedDays.MOD_NAME, version = ExtendedDays.VERSION, dependencies = ExtendedDays.DEPENDENCIES)
 public class ExtendedDays {
 
   public static final String MOD_ID = "extendeddays";
   public static final String MOD_NAME = "Extended Days";
+  public static final String VERSION = "@VERSION@";
+  public static final String VERSION_SILENTLIB = "SL_VERSION";
+  public static final int BUILD_NUM = 0;
+  public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB
+      + ",);";
+  public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
   @Instance
   public static ExtendedDays instance;
@@ -26,7 +32,7 @@ public class ExtendedDays {
   @SidedProxy(clientSide = "net.silentchaos512.extendeddays.proxy.ClientProxy", serverSide = "net.silentchaos512.extendeddays.proxy.CommonProxy")
   public static CommonProxy proxy;
 
-  public static LogHelper logHelper = new LogHelper(MOD_NAME, 0);
+  public static LogHelper logHelper = new LogHelper(MOD_NAME, BUILD_NUM);
   public static LocalizationHelper localizationHelper;
 
   public static SRegistry registry = new SRegistry(MOD_ID, logHelper);
