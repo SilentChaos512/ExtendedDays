@@ -1,6 +1,7 @@
 package net.silentchaos512.extendeddays.proxy;
 
 import net.minecraftforge.common.MinecraftForge;
+import net.silentchaos512.extendeddays.client.gui.ClockHud;
 import net.silentchaos512.extendeddays.event.ClientEvents;
 import net.silentchaos512.lib.registry.SRegistry;
 
@@ -13,6 +14,7 @@ public class ClientProxy extends CommonProxy {
     registry.clientPreInit();
 
     MinecraftForge.EVENT_BUS.register(new ClientEvents());
+    MinecraftForge.EVENT_BUS.register(ClockHud.INSTANCE);
   }
 
   @Override

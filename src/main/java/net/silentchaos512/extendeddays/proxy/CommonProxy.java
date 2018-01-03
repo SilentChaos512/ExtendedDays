@@ -10,7 +10,7 @@ public class CommonProxy {
 
     registry.preInit();
 
-    MinecraftForge.EVENT_BUS.register(new TimeEvents());
+    MinecraftForge.EVENT_BUS.register(TimeEvents.INSTANCE);
   }
 
   public void init(SRegistry registry) {

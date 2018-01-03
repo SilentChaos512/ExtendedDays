@@ -1,6 +1,8 @@
 package net.silentchaos512.extendeddays.event;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -8,12 +10,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
-import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.world.ExtendedDaysSavedData;
 import net.silentchaos512.lib.util.TimeHelper;
 
 public class TimeEvents {
 
+  public static final TimeEvents INSTANCE = new TimeEvents();
   public static Map<Integer, Float> extendedPeriods = new HashMap<>();
 
   int extendedTime = 0;
@@ -121,6 +123,28 @@ public class TimeEvents {
     int result = 24000;
     for (float minutes : extendedPeriods.values()) {
       result += TimeHelper.ticksFromMinutes(minutes);
+    }
+    return result;
+  }
+
+  public int getDaytimeLength() {
+
+    int result = 12000;
+    for (Entry<Integer, Float> entry : extendedPeriods.entrySet()) {
+      if (entry.getKey() < 12000) {
+        result += TimeHelper.ticksFromMinutes(entry.getValue());
+      }
+    }
+    return result;
+  }
+
+  public int getNighttimeLength() {
+
+    int result = 12000;
+    for (Entry<Integer, Float> entry : extendedPeriods.entrySet()) {
+      if (entry.getKey() >= 12000) {
+        result += TimeHelper.ticksFromMinutes(entry.getValue());
+      }
     }
     return result;
   }
