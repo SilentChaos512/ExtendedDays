@@ -14,7 +14,13 @@ import net.silentchaos512.lib.registry.SRegistry;
 import net.silentchaos512.lib.util.LocalizationHelper;
 import net.silentchaos512.lib.util.LogHelper;
 
-@Mod(modid = ExtendedDays.MOD_ID, name = ExtendedDays.MOD_NAME, version = ExtendedDays.VERSION, dependencies = ExtendedDays.DEPENDENCIES)
+@Mod(//@formatter:off
+    modid = ExtendedDays.MOD_ID,
+    name = ExtendedDays.MOD_NAME,
+    version = ExtendedDays.VERSION,
+    dependencies = ExtendedDays.DEPENDENCIES,
+    guiFactory = "net.silentchaos512.extendeddays.client.gui.config.GuiFactoryExtendedDays")
+//@formatter:on
 public class ExtendedDays {
 
   public static final String MOD_ID = "extendeddays";

@@ -10,6 +10,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.silentchaos512.extendeddays.ExtendedDays;
+import net.silentchaos512.extendeddays.config.Config;
+import net.silentchaos512.extendeddays.event.ClientEvents;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 
 public class ClockHud extends Gui {
@@ -36,7 +38,7 @@ public class ClockHud extends Gui {
     // Should check if player can see the sky, but not every render tick!
     // Maybe every few seconds? Also consider a pocketwatch item (with Baubles
     // compat) that allows player to see time always.
-    if (player.posY > 56) {
+    if (Config.CLOCK_SHOW_ALWAYS || ClientEvents.playerCanSeeSky) {
       renderClock(mc, world, width, height);
     }
   }
@@ -44,13 +46,14 @@ public class ClockHud extends Gui {
   public void renderClock(Minecraft mc, World world, int screenWidth, int screenHeight) {
 
     GlStateManager.enableBlend();
+    GlStateManager.enableAlpha();
 
     mc.renderEngine.bindTexture(TEXTURE);
 
-    int posX = 5; // TODO: Config
+    int posX = Config.CLOCK_POS_X;
     if (posX < 0)
       posX = posX + screenWidth - 80;
-    int posY = 25; // TODO: Config
+    int posY = Config.CLOCK_POS_Y;
     if (posY < 0)
       posY = posY + screenHeight - 12;
 
@@ -60,7 +63,7 @@ public class ClockHud extends Gui {
     // Main bar
     int texX = 0;
     int texY = isNight ? 12 : 0;
-    drawTexturedModalRect(posX, posY, texX, texY, 80, 12, 0xFFFFFF);
+    drawTexturedModalRect(posX, posY, texX, texY, 80, 12, 0xAAFFFFFF);
 
     // Extended period markers
     // TODO
@@ -73,17 +76,18 @@ public class ClockHud extends Gui {
     if (isNight)
       currentTime -= TimeEvents.INSTANCE.getDaytimeLength();
     int x = 2 + (int) (posX + 78 * ((float) currentTime) / dayLength) - 6;
-    drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xFFFFFF);
+    drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
   }
 
   protected void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width,
       int height, int color) {
 
+    float a = ((color >> 24) & 255) / 255f;
     float r = ((color >> 16) & 255) / 255f;
     float g = ((color >> 8) & 255) / 255f;
     float b = (color & 255) / 255f;
-    GlStateManager.color(r, g, b);
+    GlStateManager.color(r, g, b, a);
     drawTexturedModalRect(x, y, textureX, textureY, width, height);
-    GlStateManager.color(1f, 1f, 1f);
+    GlStateManager.color(1f, 1f, 1f, 1f);
   }
 }
