@@ -1,0 +1,12 @@
+[
+{
+  "modid": "extendeddays",
+  "name": "Extended Days",
+  "description": "Making days and/or nights longer.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://minecraft.curseforge.com/projects/silents-gems",
+  "authors": [ "SilentChaos512" ],
+  "credits": ""
+}
+]
