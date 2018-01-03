@@ -13,8 +13,8 @@ public class ExtendedDaysSavedData extends WorldSavedData {
   private static final String NBT_EXTENDED_TIME = "ExtendedTime";
   private static final String NBT_WORLD_TIME = "WorldTime";
 
-  public int extendedTime = 0;
-  public int worldTime = 0;
+  public int extendedTime = -1;
+  public int worldTime = -1;
 
   public ExtendedDaysSavedData() {
 

@@ -1,8 +1,6 @@
 package net.silentchaos512.extendeddays.event;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,7 +8,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.world.ExtendedDaysSavedData;
+import net.silentchaos512.lib.util.LogHelper;
 import net.silentchaos512.lib.util.TimeHelper;
 
 public class TimeEvents {
@@ -19,20 +19,27 @@ public class TimeEvents {
   public static Map<Integer, Float> extendedPeriods = new HashMap<>();
 
   int extendedTime = 0;
-  int extendedPeriodWorldTime = 0;
 
   @SubscribeEvent
   public void onWorldTick(WorldTickEvent event) {
 
+    // Overworld only right now.
+    if (event.phase != Phase.START || event.world.provider.getDimension() != 0)
+      return;
+
+    LogHelper log = ExtendedDays.logHelper;
+
     int worldTime = (int) (event.world.getWorldTime() % 24000);
 
     ExtendedDaysSavedData data = ExtendedDaysSavedData.get(event.world);
-    if (data == null)
+    if (data == null || data.extendedTime < 0)
       return;
+
+    //log.debug(worldTime, data.worldTime, extendedTime, data.extendedTime);
+
     if (data != null && data.extendedTime > 0) {
-      extendedTime = data.extendedTime;
+      startExtendedPeriod(event.world, data.extendedTime);
       // Make sure world time is correct.
-//      ExtendedDays.logHelper.debug(worldTime, data.worldTime, data.extendedTime);
       if (worldTime > data.worldTime && worldTime < data.worldTime + 600) {
         if (extendedPeriods.containsKey(data.worldTime) && extendedTime > 0) {
           worldTime = data.worldTime;
@@ -40,10 +47,6 @@ public class TimeEvents {
         }
       }
     }
-
-    if (event.phase != Phase.START || event.world.provider.getDimension() != 0)
-      return;
-    // logHelper.debug(event.world.getTotalWorldTime(), event.world);
 
     // We are on extended time.
     if (extendedTime > 0) {
@@ -53,7 +56,7 @@ public class TimeEvents {
         endExtendedPeriod(event.world);
       }
       // Or has the time changed?
-      if (worldTime != extendedPeriodWorldTime) {
+      if (worldTime != data.worldTime) {
         endExtendedPeriod(event.world);
       }
     } else {
@@ -62,7 +65,6 @@ public class TimeEvents {
         if (worldTime == entry.getKey()) {
           // Start a new extended time period.
           startExtendedPeriod(event.world, TimeHelper.ticksFromMinutes(entry.getValue()));
-          extendedPeriodWorldTime = worldTime;
         }
       }
     }
