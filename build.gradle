@@ -75,8 +75,8 @@ dependencies {
 
 sourceSets {
     main {
-        java { srcDirs = ["$projectDir/common"] }
-        resources { srcDirs = ["$projectDir/resources"] }
+        java { srcDirs = ["$projectDir/src/main/java"] }
+        resources { srcDirs = ["$projectDir/src/main/resources"] }
     }
 }
 
