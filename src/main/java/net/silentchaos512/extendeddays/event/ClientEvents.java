@@ -11,6 +11,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.lib.util.TimeHelper;
 
@@ -23,7 +24,7 @@ public class ClientEvents {
   public static String debugText = "";
 
   @SubscribeEvent
-  public void onRenderDebugText(RenderGameOverlayEvent event) {
+  public void onRenderDebugText(RenderGameOverlayEvent.Post event) {
 
     if (!Config.DEBUG_MODE || event.getType() != ElementType.TEXT)
       return;

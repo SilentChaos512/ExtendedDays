@@ -32,10 +32,10 @@ public class TimeEvents {
     int worldTime = (int) (event.world.getWorldTime() % 24000);
 
     ExtendedDaysSavedData data = ExtendedDaysSavedData.get(event.world);
-    if (data == null || data.extendedTime < 0)
+    if (data == null)
       return;
 
-    //log.debug(worldTime, data.worldTime, extendedTime, data.extendedTime);
+//    log.debug(worldTime, data.worldTime, extendedTime, data.extendedTime);
 
     if (data != null && data.extendedTime > 0) {
       startExtendedPeriod(event.world, data.extendedTime);
@@ -75,7 +75,7 @@ public class TimeEvents {
       data.markDirty();
     }
 
-    ClientEvents.debugText = event.world.getWorldTime() + ", " + extendedTime + "\n"
+    ClientEvents.debugText = "Time (MC, Ext): " + event.world.getWorldTime() + ", " + extendedTime + "\n"
         + "Actual Time: " + getCurrentTime(event.world) + " / " + getTotalDayLength() + "\n";
   }
 
