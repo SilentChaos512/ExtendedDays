@@ -29,7 +29,6 @@ public class ExtendedDaysSavedData extends WorldSavedData {
   @Override
   public void readFromNBT(NBTTagCompound nbt) {
 
-    ExtendedDays.logHelper.info("ExtendedDaysSavedData#readFromNBT");
     extendedTime = nbt.getInteger(NBT_EXTENDED_TIME);
     worldTime = nbt.getInteger(NBT_WORLD_TIME);
   }
@@ -37,7 +36,6 @@ public class ExtendedDaysSavedData extends WorldSavedData {
   @Override
   public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 
-    ExtendedDays.logHelper.info("ExtendedDaysSavedData#writeToNBT");
     nbt.setInteger(NBT_EXTENDED_TIME, extendedTime);
     nbt.setInteger(NBT_WORLD_TIME, worldTime);
     return nbt;
