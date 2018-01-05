@@ -1,1 +1,6 @@
+0.1.1
+Fixed: Clock and actual time not syncing when playing on a dedicated server (#3)
+Fixed: Removed some unneeded debug Text (#5)
+
 0.1.0
+First alpha release! Extended time periods and clock HUD.

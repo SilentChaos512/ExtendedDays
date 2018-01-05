@@ -8,7 +8,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.silentchaos512.extendeddays.ExtendedDays;
+import net.silentchaos512.extendeddays.config.Config;
+import net.silentchaos512.extendeddays.network.MessageSyncTime;
 import net.silentchaos512.extendeddays.world.ExtendedDaysSavedData;
 import net.silentchaos512.lib.util.LogHelper;
 import net.silentchaos512.lib.util.TimeHelper;
@@ -35,7 +39,7 @@ public class TimeEvents {
     if (data == null)
       return;
 
-//    log.debug(worldTime, data.worldTime, extendedTime, data.extendedTime);
+    // log.debug(worldTime, data.worldTime, extendedTime, data.extendedTime);
 
     if (data != null && data.extendedTime > 0) {
       startExtendedPeriod(event.world, data.extendedTime);
@@ -69,14 +73,17 @@ public class TimeEvents {
       }
     }
 
+    // Send packet to client?
+    if (event.world.getTotalWorldTime() % Config.PACKET_DELAY == 0) {
+      ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(extendedTime));
+    }
+
+    // Update world save data.
     if (data != null) {
       data.extendedTime = extendedTime;
       data.worldTime = worldTime;
       data.markDirty();
     }
-
-    ClientEvents.debugText = "Time (MC, Ext): " + event.world.getWorldTime() + ", " + extendedTime + "\n"
-        + "Actual Time: " + getCurrentTime(event.world) + " / " + getTotalDayLength() + "\n";
   }
 
   private void startExtendedPeriod(World world, int timeInTicks) {
@@ -149,5 +156,11 @@ public class TimeEvents {
       }
     }
     return result;
+  }
+
+  @SideOnly(Side.CLIENT)
+  public void syncTimeFromPacket(MessageSyncTime msg) {
+
+    this.extendedTime = msg.extendedTime;
   }
 }

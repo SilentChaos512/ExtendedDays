@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -44,7 +45,24 @@ public class ClientEvents {
   @SubscribeEvent
   public void onClientPlayerTick(PlayerTickEvent event) {
 
-    if (event.phase != Phase.START || event.player.ticksExisted % PLAYER_UPDATE_FREQUENCY != 0)
+    if (event.phase != Phase.START)
+      return;
+
+    // If playing on a dedicated server, we should update time here?
+    if (!Minecraft.getMinecraft().isSingleplayer()) {
+      if (TimeEvents.INSTANCE.extendedTime > 0) {
+        --TimeEvents.INSTANCE.extendedTime;
+      }
+    }
+
+    // Update debug text overlay
+    World world = event.player.world;
+    ClientEvents.debugText = "Time (MC, Ext): " + world.getWorldTime() + ", "
+        + TimeEvents.INSTANCE.extendedTime + "\n" + "Actual Time: "
+        + TimeEvents.INSTANCE.getCurrentTime(world) + " / "
+        + TimeEvents.INSTANCE.getTotalDayLength() + "\n";
+
+    if (event.player.ticksExisted % PLAYER_UPDATE_FREQUENCY != 0)
       return;
 
     playerCanSeeSky = checkCanPlayerSeeSky(event.player);
@@ -52,6 +70,7 @@ public class ClientEvents {
 
   /**
    * Determines if the player can "see the sky". Basically just ray traces for solid blocks.
+   * 
    * @param player
    * @return
    */
