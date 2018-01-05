@@ -68,7 +68,14 @@ public class TimeEvents {
       for (Entry<Integer, Float> entry : extendedPeriods.entrySet()) {
         if (worldTime == entry.getKey()) {
           // Start a new extended time period.
-          startExtendedPeriod(event.world, TimeHelper.ticksFromMinutes(entry.getValue()));
+          int ticks = TimeHelper.ticksFromMinutes(entry.getValue());
+          if (ticks > 0) {
+            // Extend time (positive values)
+            startExtendedPeriod(event.world, ticks);
+          } else {
+            // Shorten time (negative values)
+            event.world.setWorldTime(worldTime - ticks);
+          }
         }
       }
     }
