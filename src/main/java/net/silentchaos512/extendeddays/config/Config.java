@@ -12,6 +12,7 @@ public class Config extends ConfigBase {
   public static int CLOCK_POS_Y;
   public static boolean CLOCK_SHOW_ALWAYS;
   public static boolean DEBUG_MODE;
+  public static boolean MORPHEUS_OVERRIDE;
   public static int PACKET_DELAY;
 
   /*
@@ -22,6 +23,7 @@ public class Config extends ConfigBase {
   private static final boolean DEFAULT_CLOCK_SHOW_ALWAYS = false;
   private static boolean DEFAULT_DEBUG_MODE = false;
   private static final String[] DEFAULT_EXTENDED_PERIODS = new String[] { "6000 30", "18000 10" };
+  private static final boolean DEFAULT_MORPHEUS_OVERRIDE = true;
   private static final int DEFAULT_PACKET_DELAY = 20;
 
   /*
@@ -39,6 +41,8 @@ public class Config extends ConfigBase {
       + " of the day to add the period (in ticks, whole number between 0 and 23999, same as the"
       + " numbers you would use in the \"/time set\" command). The second is the number of minutes"
       + " to add (real minutes, not ticks! You can use non-whole numbers if you want to).";
+  private static final String COMMENT_MORPHEUS_OVERRIDE = "Override the Morpheus new day handler"
+      + " to allow time to advance correctly.";
   private static final String COMMENT_PACKET_DELAY = "The delay (in ticks) between sync packets"
       + " being sent to the client.";
 
@@ -49,6 +53,7 @@ public class Config extends ConfigBase {
   public static final String CAT_MAIN = "main";
   public static final String CAT_CLIENT = CAT_MAIN + split + "client";
   public static final String CAT_CLOCK = CAT_CLIENT + split + "clock_hud";
+  public static final String CAT_COMPAT = CAT_MAIN + split + "compatibility";
   public static final String CAT_DEBUG = CAT_MAIN + split + "debug";
   public static final String CAT_NETWORK = CAT_MAIN + split + "network";
   public static final String CAT_TIME = CAT_MAIN + split + "time";
@@ -87,6 +92,10 @@ public class Config extends ConfigBase {
       // Network
       PACKET_DELAY = loadInt("Packet Delay", CAT_NETWORK, DEFAULT_PACKET_DELAY,
           COMMENT_PACKET_DELAY);
+
+      // Compatibility
+      MORPHEUS_OVERRIDE = loadBoolean("Morpheus Support", CAT_COMPAT, DEFAULT_MORPHEUS_OVERRIDE,
+          COMMENT_MORPHEUS_OVERRIDE);
 
       // Debug
       DEBUG_MODE = loadBoolean("Debug Mode Enabled", CAT_DEBUG, DEFAULT_DEBUG_MODE,

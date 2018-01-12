@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
@@ -12,6 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.config.Config;
+import net.silentchaos512.extendeddays.network.MessageSetTime;
 import net.silentchaos512.extendeddays.network.MessageSyncTime;
 import net.silentchaos512.extendeddays.world.ExtendedDaysSavedData;
 import net.silentchaos512.lib.util.LogHelper;
@@ -93,16 +97,42 @@ public class TimeEvents {
     }
   }
 
-  private void startExtendedPeriod(World world, int timeInTicks) {
+  @SubscribeEvent
+  public void onPlayerWakeUp(PlayerWakeUpEvent event) {
+
+    /*
+     * Minecraft will not advance through the night if doDaylightCycle is false. We need to fix the time ourselves in
+     * this case.
+     * 
+     * PlayerWakeUpEvent occurs only on the client-side, so we need to send a packet to the server. The packet will call
+     * setTimeFromPacket on the server, ending the extended period and advancing to daytime.
+     */
+
+    World world = event.getEntityPlayer().world;
+    if (isInExtendedPeriod(world)) {
+      endExtendedPeriod(world);
+      long time = world.getWorldTime() + 24000L;
+      time = time - time % 24000L;
+      world.setWorldTime(time);
+      ExtendedDays.network.wrapper.sendToServer(new MessageSetTime(time, 0));
+    }
+  }
+
+  public void startExtendedPeriod(World world, int timeInTicks) {
 
     extendedTime = timeInTicks;
     world.getGameRules().setOrCreateGameRule("doDaylightCycle", "false");
   }
 
-  private void endExtendedPeriod(World world) {
+  public void endExtendedPeriod(World world) {
 
     extendedTime = 0;
     world.getGameRules().setOrCreateGameRule("doDaylightCycle", "true");
+  }
+
+  public boolean isInExtendedPeriod(World world) {
+
+    return extendedTime > 0;
   }
 
   /**
@@ -163,6 +193,18 @@ public class TimeEvents {
       }
     }
     return result;
+  }
+
+  public void setTimeFromPacket(MessageSetTime msg) {
+
+    this.extendedTime = msg.extendedTime;
+    MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+    if (server == null)
+      return;
+    World world = server.worlds[0];
+    if (world == null)
+      return;
+    world.setWorldTime(msg.worldTime);
   }
 
   @SideOnly(Side.CLIENT)

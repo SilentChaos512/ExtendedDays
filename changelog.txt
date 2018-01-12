@@ -1,7 +1,11 @@
+0.1.2
+Added: Support for Morpheus (#7)
+Fixed: Sleeping during extended periods not working (#7)
+
 0.1.1
 Added: The ability to shorten days/nights with negative extended periods (this advances time, so the sun/moon will jump ahead. I'm still working on a fix for sky rendering) (#4)
 Fixed: Clock and actual time not syncing when playing on a dedicated server (#3)
-Fixed: Removed some unneeded debug Text (#5)
+Fixed: Removed some unneeded debug text (#5)
 
 0.1.0
 First alpha release! Extended time periods and clock HUD.

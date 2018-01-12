@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.silentchaos512.extendeddays.config.Config;
+import net.silentchaos512.extendeddays.network.MessageSetTime;
 import net.silentchaos512.extendeddays.network.MessageSyncTime;
 import net.silentchaos512.extendeddays.proxy.CommonProxy;
 import net.silentchaos512.lib.SilentLib;
@@ -32,7 +33,7 @@ public class ExtendedDays {
   public static final String VERSION_SILENTLIB = "SL_VERSION";
   public static final int BUILD_NUM = 0;
   public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB
-      + ",);";
+      + ",);after:morpheus";
   public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
   @Instance
@@ -55,6 +56,7 @@ public class ExtendedDays {
 
     network = new NetworkHandlerSL(MOD_ID);
     network.register(MessageSyncTime.class, Side.CLIENT);
+    network.register(MessageSetTime.class, Side.SERVER);
 
     Config.INSTANCE.init(event.getSuggestedConfigurationFile());
 
