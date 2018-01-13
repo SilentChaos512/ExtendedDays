@@ -14,6 +14,8 @@ public class Config extends ConfigBase {
   public static boolean DEBUG_MODE;
   public static boolean MORPHEUS_OVERRIDE;
   public static int PACKET_DELAY;
+  public static boolean WATCH_SHOW_TIME;
+  public static boolean WATCH_USE_AM_PM;
 
   /*
    * Defaults
@@ -25,6 +27,8 @@ public class Config extends ConfigBase {
   private static final String[] DEFAULT_EXTENDED_PERIODS = new String[] { "6000 30", "18000 10" };
   private static final boolean DEFAULT_MORPHEUS_OVERRIDE = true;
   private static final int DEFAULT_PACKET_DELAY = 20;
+  private static final boolean DEFAULT_WATCH_SHOW_TIME = true;
+  private static final boolean DEFAULT_WATCH_USE_AM_PM = false;
 
   /*
    * Comments
@@ -45,6 +49,10 @@ public class Config extends ConfigBase {
       + " to allow time to advance correctly.";
   private static final String COMMENT_PACKET_DELAY = "The delay (in ticks) between sync packets"
       + " being sent to the client.";
+  private static final String COMMENT_WATCH_SHOW_TIME = "Displays the exact time when the player"
+      + " has a pocket watch in their inventory.";
+  private static final String COMMENT_WATCH_USE_AM_PM = "Displays a 12-hour time with AM/PM, for"
+      + " those who don't know how to read a 24-hour clock.";
 
   /*
    * Categories
@@ -88,6 +96,10 @@ public class Config extends ConfigBase {
       CLOCK_POS_Y = loadInt("Position Y", CAT_CLOCK, DEFAULT_CLOCK_POS_Y, COMMENT_CLOCK_POS);
       CLOCK_SHOW_ALWAYS = loadBoolean("Show Always", CAT_CLOCK, DEFAULT_CLOCK_SHOW_ALWAYS,
           COMMENT_CLOCK_SHOW_ALWAYS);
+      WATCH_SHOW_TIME = loadBoolean("Show Time With Pocket Watch", CAT_CLOCK,
+          DEFAULT_WATCH_SHOW_TIME, COMMENT_WATCH_SHOW_TIME);
+      WATCH_USE_AM_PM = loadBoolean("Use 12-Hour Clock", CAT_CLOCK, DEFAULT_WATCH_USE_AM_PM,
+          COMMENT_WATCH_USE_AM_PM);
 
       // Network
       PACKET_DELAY = loadInt("Packet Delay", CAT_NETWORK, DEFAULT_PACKET_DELAY,

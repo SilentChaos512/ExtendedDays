@@ -84,7 +84,8 @@ public class ClockHud extends Gui {
     int x = 2 + (int) (posX + 78 * ((float) currentTime) / dayLength) - 6;
     drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
 
-    if (hasPocketWatch) {
+    if (hasPocketWatch && Config.WATCH_SHOW_TIME) {
+      currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
       int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
       int adjustedTime = (int) (24000L * currentTime / totalDayLength);
       int hour = adjustedTime / 1000 + 6;
@@ -92,8 +93,24 @@ public class ClockHud extends Gui {
         hour -= 24;
       int minute = (int) (60 * (adjustedTime % 1000 / 1000f));
 
-      String str = String.format("%d:%02d", hour, minute);
-      int clockX = posX + (Config.CLOCK_POS_X < 0 ? -25 : 85);
+      // Adjust for 12-hour clock
+      String suffix = "";
+      if (Config.WATCH_USE_AM_PM) {
+        suffix = "AM";
+        if (hour > 12) {
+          // Afternoon
+          hour -= 12;
+          suffix = "PM";
+        }
+        if (hour == 0) {
+          // Midnight
+          hour = 12;
+        }
+      }
+
+      String str = String.format("%d:%02d %s", hour, minute, suffix);
+      int strWidth = mc.fontRenderer.getStringWidth(str);
+      int clockX = posX + (Config.CLOCK_POS_X < 0 ? -(strWidth + 5) : 85);
       int clockY = posY + mc.fontRenderer.FONT_HEIGHT / 2 - 2;
       mc.fontRenderer.drawStringWithShadow(str, clockX, clockY, 0xFFFFFF);
     }
