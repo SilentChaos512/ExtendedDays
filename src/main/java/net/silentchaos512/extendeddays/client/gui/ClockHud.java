@@ -13,6 +13,7 @@ import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.extendeddays.event.ClientEvents;
 import net.silentchaos512.extendeddays.event.TimeEvents;
+import net.silentchaos512.lib.util.InventoryHelper;
 
 public class ClockHud extends Gui {
 
@@ -38,12 +39,17 @@ public class ClockHud extends Gui {
     // Should check if player can see the sky, but not every render tick!
     // Maybe every few seconds? Also consider a pocketwatch item (with Baubles
     // compat) that allows player to see time always.
-    if (Config.CLOCK_SHOW_ALWAYS || ClientEvents.playerCanSeeSky) {
-      renderClock(mc, world, width, height);
+    if (ClientEvents.playerHasPocketWatch) {
+      renderClock(mc, world, width, height, true);
+    }
+    if (Config.CLOCK_SHOW_ALWAYS || ClientEvents.playerHasVanillaClock
+        || ClientEvents.playerCanSeeSky) {
+      renderClock(mc, world, width, height, false);
     }
   }
 
-  public void renderClock(Minecraft mc, World world, int screenWidth, int screenHeight) {
+  public void renderClock(Minecraft mc, World world, int screenWidth, int screenHeight,
+      boolean hasPocketWatch) {
 
     GlStateManager.enableBlend();
     GlStateManager.enableAlpha();
@@ -77,6 +83,20 @@ public class ClockHud extends Gui {
       currentTime -= TimeEvents.INSTANCE.getDaytimeLength();
     int x = 2 + (int) (posX + 78 * ((float) currentTime) / dayLength) - 6;
     drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
+
+    if (hasPocketWatch) {
+      int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
+      int adjustedTime = (int) (24000L * currentTime / totalDayLength);
+      int hour = adjustedTime / 1000 + 6;
+      if (hour >= 24)
+        hour -= 24;
+      int minute = (int) (60 * (adjustedTime % 1000 / 1000f));
+
+      String str = String.format("%d:%02d", hour, minute);
+      int clockX = posX + (Config.CLOCK_POS_X < 0 ? -25 : 85);
+      int clockY = posY + mc.fontRenderer.FONT_HEIGHT / 2 - 2;
+      mc.fontRenderer.drawStringWithShadow(str, clockX, clockY, 0xFFFFFF);
+    }
   }
 
   protected void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width,

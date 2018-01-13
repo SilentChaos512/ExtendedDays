@@ -1,5 +1,6 @@
 package net.silentchaos512.extendeddays;
 
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -9,6 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.silentchaos512.extendeddays.config.Config;
+import net.silentchaos512.extendeddays.init.ModItems;
 import net.silentchaos512.extendeddays.network.MessageSetTime;
 import net.silentchaos512.extendeddays.network.MessageSyncTime;
 import net.silentchaos512.extendeddays.proxy.CommonProxy;
@@ -60,7 +62,7 @@ public class ExtendedDays {
 
     Config.INSTANCE.init(event.getSuggestedConfigurationFile());
 
-    // TODO: Registration handlers go here.
+    registry.addRegistrationHandler(new ModItems(), Item.class);
 
     proxy.preInit(registry);
   }

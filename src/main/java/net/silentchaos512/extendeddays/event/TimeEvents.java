@@ -122,12 +122,14 @@ public class TimeEvents {
 
     extendedTime = timeInTicks;
     world.getGameRules().setOrCreateGameRule("doDaylightCycle", "false");
+    ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(extendedTime));
   }
 
   public void endExtendedPeriod(World world) {
 
     extendedTime = 0;
     world.getGameRules().setOrCreateGameRule("doDaylightCycle", "true");
+    ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(extendedTime));
   }
 
   public boolean isInExtendedPeriod(World world) {
