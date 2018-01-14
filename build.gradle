@@ -19,7 +19,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    version = "1.12-14.21.1.2387"
+    version = "1.12-14.21.1.2443"
     runDir = "eclipse"
 
     def versionFile = file('version.properties')
@@ -37,23 +37,25 @@ minecraft {
     replace "@VERSION@", project.version
     replace "SL_VERSION", silentlib_version
     replace "BUILD_NUM = 0", "BUILD_NUM = " + buildNum
+    replaceIn "ExtendedDays.java"
 
     mappings = "snapshot_20170624"
-    useDepAts = true
 }
 
 repositories {
     //mavenCentral()
     maven {
-        name = "JEI"
+        name = "DVS1 Maven FS"
         url "http://dvs1.progwml6.com/files/maven"
     }
 }
 
 jar {
     classifier = buildNum
+    manifest {
+        attributes "FMLAT": "extendeddays_at.cfg"
+    }
 }
-
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = buildNum + '-sources'
     from sourceSets.main.allSource
@@ -63,7 +65,6 @@ task deobfJar(type: Jar) {
         classifier = buildNum + "-deobf"
     }
 }
-
 artifacts {
     archives sourcesJar
     archives deobfJar
@@ -98,4 +99,6 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+
+    rename '(.+_at.cfg)', 'META-INF/$1'
 }
