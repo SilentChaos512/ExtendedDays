@@ -12,13 +12,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.client.render.SkyRenderer;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.extendeddays.item.ItemPocketWatch;
+import net.silentchaos512.lib.util.ChatHelper;
 import net.silentchaos512.lib.util.PlayerHelper;
 import net.silentchaos512.lib.util.TimeHelper;
 
@@ -50,16 +51,34 @@ public class ClientEvents {
     GlStateManager.popMatrix();
   }
 
+  private static final int RENDERER_ERROR_REPORT_DELAY = TimeHelper.ticksFromSeconds(30);
+  private int ticksUnableToReplaceRenderer = 0;
+  private boolean reportedUnableToReplaceRenderer = false;
+
   @SubscribeEvent
   public void onClientPlayerTick(PlayerTickEvent event) {
 
     if (event.phase != Phase.START)
       return;
 
+    /*
+     * Replace the sky renderer
+     */
     if (Config.SKY_OVERRIDE) {
-      WorldProvider provider = Minecraft.getMinecraft().world.provider;
+      Minecraft mc = Minecraft.getMinecraft();
+      // Do some null checks. If unable to replace for an extended period, report it to the player.
+      if (mc == null || mc.world == null || mc.world.provider == null) {
+        ++ticksUnableToReplaceRenderer;
+        if (!reportedUnableToReplaceRenderer
+            && ticksUnableToReplaceRenderer > RENDERER_ERROR_REPORT_DELAY) {
+          ChatHelper.sendMessage(event.player, "Extended Days was unable to replace sky renderer!");
+          reportedUnableToReplaceRenderer = true;
+        }
+      }
+      WorldProvider provider = mc.world.provider;
       if (!(provider.getSkyRenderer() instanceof SkyRenderer)) {
         provider.setSkyRenderer(new SkyRenderer());
+        ticksUnableToReplaceRenderer = 0;
       }
     }
 
