@@ -2,6 +2,8 @@
 Added: The pocket watch. With a pocket watch in your inventory, you can tell time accurately, no matter where you are! Craft a vanilla clock with some type of quartz to get one.
 Added: Pocket watch displays an actual time next to the clock bar. It's a 24-hour clock by default but you can change it to a 12-hour clock (with AM/PM) if that's more your style. There's also a config to disable it entirely. The text is to the right of the clock bar normally, or to the left if the clock bar is anchored to the right of the screen (tldr: you won't need to tweak your clock bar's position)
 Added: You can now see the clock bar whenever there's a vanilla clock in your inventory, but it will not display the exact time.
+Added: A new command, "edtime". Allows opped users to get or set the current time. Currently, the set command requires two values and is not very intuitive. I'm working on it.
+Fixed: The sun/moon no longer freeze during extended periods. The mod completely takes over sky rendering, so it may not working correctly if other mods try to do the same.
 
 0.1.2
 Added: Support for Morpheus (#7)

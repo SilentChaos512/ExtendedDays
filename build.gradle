@@ -9,7 +9,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "0.1.2"
+version = "0.2.0"
 def silentlib_version = "2.2.16"
 def buildNum = 0;
 group = "net.silentchaos512.extendeddays"
@@ -25,11 +25,11 @@ minecraft {
     def versionFile = file('version.properties')
     if (versionFile.canRead()) {
         def Properties versionProps = new Properties()
-        
+
         versionProps.load(new FileInputStream(versionFile))
-        
+
         buildNum = versionProps['BUILD_NUM'].toInteger() + 1
-        
+
         versionProps['BUILD_NUM'] = buildNum.toString()
         versionProps.store(versionFile.newWriter(), null)
     }
@@ -89,11 +89,11 @@ processResources
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'

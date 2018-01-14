@@ -9,11 +9,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.silentchaos512.extendeddays.client.render.SkyRenderer;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.extendeddays.item.ItemPocketWatch;
 import net.silentchaos512.lib.util.PlayerHelper;
@@ -53,6 +56,13 @@ public class ClientEvents {
     if (event.phase != Phase.START)
       return;
 
+    if (Config.SKY_OVERRIDE) {
+      WorldProvider provider = Minecraft.getMinecraft().world.provider;
+      if (!(provider.getSkyRenderer() instanceof SkyRenderer)) {
+        provider.setSkyRenderer(new SkyRenderer());
+      }
+    }
+
     // If playing on a dedicated server, we should update time here?
     if (!Minecraft.getMinecraft().isSingleplayer()) {
       if (TimeEvents.INSTANCE.extendedTime > 0) {
@@ -65,7 +75,8 @@ public class ClientEvents {
     ClientEvents.debugText = "Time (MC, Ext): " + world.getWorldTime() + ", "
         + TimeEvents.INSTANCE.extendedTime + "\n" + "Actual Time: "
         + TimeEvents.INSTANCE.getCurrentTime(world) + " / "
-        + TimeEvents.INSTANCE.getTotalDayLength() + "\n";
+        + TimeEvents.INSTANCE.getTotalDayLength() + "\n" + "Day/Night Length: "
+        + TimeEvents.INSTANCE.getDaytimeLength() + ", " + TimeEvents.INSTANCE.getNighttimeLength();
 
     // We don't want to check for sky visibility or watches every tick.
     if (event.player.ticksExisted % PLAYER_UPDATE_FREQUENCY != 0)

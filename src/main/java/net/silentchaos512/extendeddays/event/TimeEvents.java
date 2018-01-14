@@ -129,7 +129,7 @@ public class TimeEvents {
 
     extendedTime = 0;
     world.getGameRules().setOrCreateGameRule("doDaylightCycle", "true");
-    ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(extendedTime));
+    // ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(extendedTime));
   }
 
   public boolean isInExtendedPeriod(World world) {
@@ -228,6 +228,17 @@ public class TimeEvents {
 
   public double getAdjustedWorldTime(World world) {
 
-    return 24000.0 * INSTANCE.getCurrentTime(world) / INSTANCE.getTotalDayLength();
+    return 24000.0 * getCurrentTime(world) / getTotalDayLength();
+  }
+
+  public double getCelestialAdjustedTime(World world) {
+
+    int currentTime = getCurrentTime(world);
+    if (currentTime >= getDaytimeLength()) {
+      int nighttime = currentTime - getDaytimeLength();
+      return 12000.0 * nighttime / getNighttimeLength() + 12000;
+    } else {
+      return 12000.0 * currentTime / getDaytimeLength();
+    }
   }
 }

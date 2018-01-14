@@ -14,6 +14,7 @@ public class Config extends ConfigBase {
   public static boolean DEBUG_MODE;
   public static boolean MORPHEUS_OVERRIDE;
   public static int PACKET_DELAY;
+  public static boolean SKY_OVERRIDE;
   public static boolean WATCH_SHOW_TIME;
   public static boolean WATCH_USE_AM_PM;
 
@@ -27,6 +28,7 @@ public class Config extends ConfigBase {
   private static final String[] DEFAULT_EXTENDED_PERIODS = new String[] { "6000 30", "18000 10" };
   private static final boolean DEFAULT_MORPHEUS_OVERRIDE = true;
   private static final int DEFAULT_PACKET_DELAY = 20;
+  private static final boolean DEFAULT_SKY_OVERRIDE = true;
   private static final boolean DEFAULT_WATCH_SHOW_TIME = true;
   private static final boolean DEFAULT_WATCH_USE_AM_PM = false;
 
@@ -49,6 +51,8 @@ public class Config extends ConfigBase {
       + " to allow time to advance correctly.";
   private static final String COMMENT_PACKET_DELAY = "The delay (in ticks) between sync packets"
       + " being sent to the client.";
+  private static final String COMMENT_SKY_OVERRIDE = "Override sky rendering. Without this, the"
+      + " sun/moon will likely freeze during extended periods.";
   private static final String COMMENT_WATCH_SHOW_TIME = "Displays the exact time when the player"
       + " has a pocket watch in their inventory.";
   private static final String COMMENT_WATCH_USE_AM_PM = "Displays a 12-hour time with AM/PM, for"
@@ -64,6 +68,7 @@ public class Config extends ConfigBase {
   public static final String CAT_COMPAT = CAT_MAIN + split + "compatibility";
   public static final String CAT_DEBUG = CAT_MAIN + split + "debug";
   public static final String CAT_NETWORK = CAT_MAIN + split + "network";
+  public static final String CAT_SKY = CAT_CLIENT + split + "sky";
   public static final String CAT_TIME = CAT_MAIN + split + "time";
 
   public static final Config INSTANCE = new Config();
@@ -100,6 +105,11 @@ public class Config extends ConfigBase {
           DEFAULT_WATCH_SHOW_TIME, COMMENT_WATCH_SHOW_TIME);
       WATCH_USE_AM_PM = loadBoolean("Use 12-Hour Clock", CAT_CLOCK, DEFAULT_WATCH_USE_AM_PM,
           COMMENT_WATCH_USE_AM_PM);
+
+      // Sky
+      config.setCategoryRequiresWorldRestart(CAT_SKY, true);
+      SKY_OVERRIDE = loadBoolean("Override Sky Rendering", CAT_SKY, DEFAULT_SKY_OVERRIDE,
+          COMMENT_SKY_OVERRIDE);
 
       // Network
       PACKET_DELAY = loadInt("Packet Delay", CAT_NETWORK, DEFAULT_PACKET_DELAY,
