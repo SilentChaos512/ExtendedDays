@@ -197,21 +197,37 @@ public class TimeEvents {
     return result;
   }
 
+  public void setActualTime(World world, long time) {
+
+    // TODO
+  }
+
   public void setTimeFromPacket(MessageSetTime msg) {
 
-    this.extendedTime = msg.extendedTime;
     MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
     if (server == null)
       return;
     World world = server.worlds[0];
     if (world == null)
       return;
-    world.setWorldTime(msg.worldTime);
+    setTime(world, msg.worldTime, msg.extendedTime);
+  }
+
+  public void setTime(World world, long worldTime, int extendedTime) {
+
+    this.extendedTime = extendedTime;
+    world.setWorldTime(worldTime);
+    ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(extendedTime));
   }
 
   @SideOnly(Side.CLIENT)
   public void syncTimeFromPacket(MessageSyncTime msg) {
 
     this.extendedTime = msg.extendedTime;
+  }
+
+  public double getAdjustedWorldTime(World world) {
+
+    return 24000.0 * INSTANCE.getCurrentTime(world) / INSTANCE.getTotalDayLength();
   }
 }

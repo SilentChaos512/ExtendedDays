@@ -8,7 +8,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.silentchaos512.extendeddays.command.CommandExtTime;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.extendeddays.init.ModItems;
 import net.silentchaos512.extendeddays.network.MessageSetTime;
@@ -78,5 +80,11 @@ public class ExtendedDays {
   public void postInit(FMLPostInitializationEvent event) {
 
     proxy.postInit(registry);
+  }
+
+  @EventHandler
+  public void onServerLoad(FMLServerStartingEvent event) {
+
+    event.registerServerCommand(new CommandExtTime());
   }
 }
