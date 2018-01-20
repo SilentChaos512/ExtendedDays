@@ -46,7 +46,7 @@ public class ExtendedDays {
   @SidedProxy(clientSide = "net.silentchaos512.extendeddays.proxy.ClientProxy", serverSide = "net.silentchaos512.extendeddays.proxy.CommonProxy")
   public static CommonProxy proxy;
 
-  public static LogHelper logHelper = new LogHelper(MOD_NAME, BUILD_NUM);
+  public static LogHelper logHelper = new LogHelper(MOD_NAME);
   public static LocalizationHelper localizationHelper;
 
   public static SRegistry registry = new SRegistry(MOD_ID, logHelper);

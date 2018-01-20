@@ -15,6 +15,8 @@ import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 import net.silentchaos512.lib.command.CommandBaseSL;
 
+// TODO: Add "advance to day" subcommand?
+
 public class CommandExtTime extends CommandBaseSL {
 
   @Override

@@ -4,13 +4,13 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "0.2.1"
-def silentlib_version = "2.2.16"
+def silentlib_version = "2.2.6"
 def buildNum = 0;
 group = "net.silentchaos512.extendeddays"
 archivesBaseName = "ExtendedDays-1.12"
@@ -19,7 +19,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    version = "1.12-14.21.1.2443"
+    version = "1.11.2-13.20.1.2588"
     runDir = "eclipse"
 
     def versionFile = file('version.properties')

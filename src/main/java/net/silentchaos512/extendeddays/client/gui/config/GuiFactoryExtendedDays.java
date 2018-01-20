@@ -11,4 +11,11 @@ public class GuiFactoryExtendedDays extends GuiFactorySL {
     return GuiConfigExtendedDays.class;
   }
 
+  @Override
+  public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
+
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

@@ -2,9 +2,8 @@ package net.silentchaos512.extendeddays.world;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldSavedData;
 import net.minecraft.world.storage.MapStorage;
-import net.minecraft.world.storage.WorldSavedData;
-import net.silentchaos512.extendeddays.ExtendedDays;
 
 
 public class ExtendedDaysSavedData extends WorldSavedData {

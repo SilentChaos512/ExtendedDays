@@ -2,17 +2,16 @@ package net.silentchaos512.extendeddays.client.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IRenderHandler;
-import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 
 public class SkyRenderer extends IRenderHandler {
@@ -36,7 +35,7 @@ public class SkyRenderer extends IRenderHandler {
 
     GlStateManager.color(f, f1, f2);
     Tessellator tessellator = Tessellator.getInstance();
-    BufferBuilder bufferbuilder = tessellator.getBuffer();
+    VertexBuffer bufferbuilder = tessellator.getBuffer();
     GlStateManager.depthMask(false);
     GlStateManager.enableFog();
     GlStateManager.color(f, f1, f2);
