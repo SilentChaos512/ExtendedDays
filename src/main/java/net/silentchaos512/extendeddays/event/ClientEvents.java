@@ -74,6 +74,7 @@ public class ClientEvents {
           ChatHelper.sendMessage(event.player, "Extended Days was unable to replace sky renderer!");
           reportedUnableToReplaceRenderer = true;
         }
+        return;
       }
       WorldProvider provider = mc.world.provider;
       if (!(provider.getSkyRenderer() instanceof SkyRenderer)) {
