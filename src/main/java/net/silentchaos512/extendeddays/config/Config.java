@@ -8,6 +8,7 @@ import net.silentchaos512.lib.config.ConfigMultiValueLineParser;
 
 public class Config extends ConfigBase {
 
+  public static boolean CLOCK_ENABLED;
   public static int CLOCK_POS_X;
   public static int CLOCK_POS_Y;
   public static boolean CLOCK_SHOW_ALWAYS;
@@ -21,6 +22,7 @@ public class Config extends ConfigBase {
   /*
    * Defaults
    */
+  private static final boolean DEFAULT_CLOCK_ENABLED = true;
   private static final int DEFAULT_CLOCK_POS_X = 5;
   private static final int DEFAULT_CLOCK_POS_Y = 5;
   private static final boolean DEFAULT_CLOCK_SHOW_ALWAYS = false;
@@ -35,6 +37,8 @@ public class Config extends ConfigBase {
   /*
    * Comments
    */
+  private static final String COMMENT_CLOCK_ENABLED = "If set to false, the clock will not render"
+      + " under any circumstances.";
   private static final String COMMENT_CLOCK_POS = "Sets the position of the clock HUD element."
       + " Entering negative numbers will anchor the clock to the right/bottom of the screen.";
   private static final String COMMENT_CLOCK_SHOW_ALWAYS = "If enabled, the clock HUD will show at"
@@ -97,6 +101,7 @@ public class Config extends ConfigBase {
       }
 
       // Clock HUD
+      CLOCK_ENABLED = loadBoolean("Enabled", CAT_CLOCK, DEFAULT_CLOCK_ENABLED, COMMENT_CLOCK_ENABLED);
       CLOCK_POS_X = loadInt("Position X", CAT_CLOCK, DEFAULT_CLOCK_POS_X, COMMENT_CLOCK_POS);
       CLOCK_POS_Y = loadInt("Position Y", CAT_CLOCK, DEFAULT_CLOCK_POS_Y, COMMENT_CLOCK_POS);
       CLOCK_SHOW_ALWAYS = loadBoolean("Show Always", CAT_CLOCK, DEFAULT_CLOCK_SHOW_ALWAYS,

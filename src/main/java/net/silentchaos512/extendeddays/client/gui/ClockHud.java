@@ -25,7 +25,7 @@ public class ClockHud extends Gui {
   @SubscribeEvent
   public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
 
-    if (event.getType() != ElementType.TEXT)
+    if (!Config.CLOCK_ENABLED || event.getType() != ElementType.TEXT)
       return;
 
     Minecraft mc = Minecraft.getMinecraft();
