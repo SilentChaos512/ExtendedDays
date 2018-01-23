@@ -13,6 +13,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IRenderHandler;
 import net.silentchaos512.extendeddays.ExtendedDays;
+import net.silentchaos512.extendeddays.compat.BloodmoonCompat;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 
 public class SkyRenderer extends IRenderHandler {
@@ -28,18 +29,23 @@ public class SkyRenderer extends IRenderHandler {
      * cycles, for example). For now, it renders just like vanilla... although with no 3D anaglyph support.
      */
 
+    // Celestial angle based on Extended Days time. It's the reason this entire class exists.
+    float celestialAngle = getCelestialAngle(world, partialTicks);
+
     GlStateManager.disableTexture2D();
     Vec3d vec3d = world.getSkyColor(mc.getRenderViewEntity(), partialTicks);
-    float f = (float) vec3d.x;
-    float f1 = (float) vec3d.y;
-    float f2 = (float) vec3d.z;
+    BloodmoonCompat.INSTANCE.skyColorHook(vec3d);
+    float skyRed = (float) vec3d.x;
+    float skyGreen = (float) vec3d.y;
+    float skyBlue = (float) vec3d.z;
 
-    GlStateManager.color(f, f1, f2);
+    // Set sky color
+    GlStateManager.color(skyRed, skyGreen, skyBlue);
     Tessellator tessellator = Tessellator.getInstance();
     BufferBuilder bufferbuilder = tessellator.getBuffer();
     GlStateManager.depthMask(false);
     GlStateManager.enableFog();
-    GlStateManager.color(f, f1, f2);
+    GlStateManager.color(skyRed, skyGreen, skyBlue);
 
     if (mc.renderGlobal.vboEnabled) {
       mc.renderGlobal.skyVBO.bindBuffer();
@@ -59,9 +65,9 @@ public class SkyRenderer extends IRenderHandler {
         GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE,
         GlStateManager.DestFactor.ZERO);
     RenderHelper.disableStandardItemLighting();
-    float[] afloat = world.provider.calcSunriseSunsetColors(getCelestialAngle(world, partialTicks),
-        partialTicks);
+    float[] afloat = world.provider.calcSunriseSunsetColors(celestialAngle, partialTicks);
 
+    // Sunrise/Sunset colors
     if (afloat != null) {
       GlStateManager.disableTexture2D();
       GlStateManager.shadeModel(7425);
@@ -71,12 +77,13 @@ public class SkyRenderer extends IRenderHandler {
           MathHelper.sin(getCelestialAngleRadians(world, partialTicks)) < 0.0F ? 180.0F : 0.0F,
           0.0F, 0.0F, 1.0F);
       GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
-      float f6 = afloat[0];
-      float f7 = afloat[1];
-      float f8 = afloat[2];
+      float red = afloat[0];
+      float green = afloat[1];
+      float blue = afloat[2];
+      float alpha = afloat[3];
 
       bufferbuilder.begin(6, DefaultVertexFormats.POSITION_COLOR);
-      bufferbuilder.pos(0.0D, 100.0D, 0.0D).color(f6, f7, f8, afloat[3]).endVertex();
+      bufferbuilder.pos(0.0D, 100.0D, 0.0D).color(red, green, blue, alpha).endVertex();
       int j = 16;
 
       for (int l = 0; l <= 16; ++l) {
@@ -84,8 +91,7 @@ public class SkyRenderer extends IRenderHandler {
         float f12 = MathHelper.sin(f21);
         float f13 = MathHelper.cos(f21);
         bufferbuilder
-            .pos((double) (f12 * 120.0F), (double) (f13 * 120.0F),
-                (double) (-f13 * 40.0F * afloat[3]))
+            .pos((double) (f12 * 120.0F), (double) (f13 * 120.0F), (double) (-f13 * 40.0F * alpha))
             .color(afloat[0], afloat[1], afloat[2], 0.0F).endVertex();
       }
 
@@ -99,11 +105,13 @@ public class SkyRenderer extends IRenderHandler {
         GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE,
         GlStateManager.DestFactor.ZERO);
     GlStateManager.pushMatrix();
-    float f16 = 1.0F - world.getRainStrength(partialTicks);
-    GlStateManager.color(1.0F, 1.0F, 1.0F, f16);
+    float weatherClearness = 1.0F - world.getRainStrength(partialTicks);
+    GlStateManager.color(1.0F, 1.0F, 1.0F, weatherClearness);
     GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-    GlStateManager.rotate(getCelestialAngle(world, partialTicks) * 360.0F, 1.0F, 0.0F, 0.0F);
+    GlStateManager.rotate(celestialAngle * 360.0F, 1.0F, 0.0F, 0.0F);
     float f17 = 30.0F;
+
+    // Sun
     mc.renderEngine.bindTexture(RenderGlobal.SUN_TEXTURES);
     bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
     bufferbuilder.pos((double) (-f17), 100.0D, (double) (-f17)).tex(0.0D, 0.0D).endVertex();
@@ -112,10 +120,19 @@ public class SkyRenderer extends IRenderHandler {
     bufferbuilder.pos((double) (-f17), 100.0D, (double) f17).tex(0.0D, 1.0D).endVertex();
     tessellator.draw();
     f17 = 20.0F;
+
+    // Moon
     mc.renderEngine.bindTexture(RenderGlobal.MOON_PHASES_TEXTURES);
-    int i = world.getMoonPhase();
-    int k = i % 4;
-    int i1 = i / 4 % 2;
+    // Moon color
+    Vec3d moonColor = getMoonColor(world, partialTicks);
+    float moonRed = (float) moonColor.x;
+    float moonGreen = (float) moonColor.y;
+    float moonBlue = (float) moonColor.z;
+    GlStateManager.color(moonRed, moonGreen, moonBlue);
+    // Moon phase
+    int moonPhase = world.getMoonPhase();
+    int k = moonPhase % 4;
+    int i1 = moonPhase / 4 % 2;
     float f22 = (float) (k + 0) / 4.0F;
     float f23 = (float) (i1 + 0) / 2.0F;
     float f24 = (float) (k + 1) / 4.0F;
@@ -131,10 +148,11 @@ public class SkyRenderer extends IRenderHandler {
         .endVertex();
     tessellator.draw();
     GlStateManager.disableTexture2D();
-    float f15 = world.getStarBrightness(partialTicks) * f16;
+    float starBrightness = world.getStarBrightness(partialTicks) * weatherClearness;
 
-    if (f15 > 0.0F) {
-      GlStateManager.color(f15, f15, f15, f15);
+    // Stars
+    if (starBrightness > 0.0F) {
+      GlStateManager.color(starBrightness, starBrightness, starBrightness, starBrightness);
 
       if (mc.renderGlobal.vboEnabled) {
         mc.renderGlobal.starVBO.bindBuffer();
@@ -201,9 +219,9 @@ public class SkyRenderer extends IRenderHandler {
     }
 
     if (world.provider.isSkyColored()) {
-      GlStateManager.color(f * 0.2F + 0.04F, f1 * 0.2F + 0.04F, f2 * 0.6F + 0.1F);
+      GlStateManager.color(skyRed * 0.2F + 0.04F, skyGreen * 0.2F + 0.04F, skyBlue * 0.6F + 0.1F);
     } else {
-      GlStateManager.color(f, f1, f2);
+      GlStateManager.color(skyRed, skyGreen, skyBlue);
     }
 
     GlStateManager.pushMatrix();
@@ -223,5 +241,12 @@ public class SkyRenderer extends IRenderHandler {
 
     double adjustedTime = TimeEvents.INSTANCE.getCelestialAdjustedTime(world);
     return world.provider.calculateCelestialAngle((long) adjustedTime, partialTicks);
+  }
+
+  private Vec3d getMoonColor(World world, float partialTicks) {
+
+    Vec3d moonColor = new Vec3d(1.0, 1.0, 1.0);
+    moonColor = BloodmoonCompat.INSTANCE.moonColorHook(moonColor);
+    return moonColor;
   }
 }

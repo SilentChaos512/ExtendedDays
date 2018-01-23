@@ -10,10 +10,10 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.silentchaos512.extendeddays.ExtendedDays;
+import net.silentchaos512.extendeddays.compat.BloodmoonCompat;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.extendeddays.event.ClientEvents;
 import net.silentchaos512.extendeddays.event.TimeEvents;
-import net.silentchaos512.lib.util.InventoryHelper;
 
 public class ClockHud extends Gui {
 
@@ -68,7 +68,7 @@ public class ClockHud extends Gui {
 
     // Main bar
     int texX = 0;
-    int texY = isNight ? 12 : 0;
+    int texY = BloodmoonCompat.INSTANCE.isBloodmoonActive() ? 24 : isNight ? 12 : 0;
     drawTexturedModalRect(posX, posY, texX, texY, 80, 12, 0xAAFFFFFF);
 
     // Extended period markers
@@ -85,9 +85,11 @@ public class ClockHud extends Gui {
     drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
 
     if (hasPocketWatch && Config.WATCH_SHOW_TIME) {
-      currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
-      int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
-      int adjustedTime = (int) (24000L * currentTime / totalDayLength);
+      //currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
+//      int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
+//      int adjustedTime = (int) (24000L * currentTime / totalDayLength);
+      currentTime = (int) TimeEvents.INSTANCE.getCelestialAdjustedTime(world);
+      int adjustedTime = currentTime;
       int hour = adjustedTime / 1000 + 6;
       if (hour >= 24)
         hour -= 24;
