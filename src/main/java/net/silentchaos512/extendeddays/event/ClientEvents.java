@@ -19,6 +19,7 @@ import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.client.render.SkyRenderer;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.extendeddays.item.ItemPocketWatch;
+import net.silentchaos512.extendeddays.world.ExtendedDaysSavedData;
 import net.silentchaos512.lib.util.ChatHelper;
 import net.silentchaos512.lib.util.PlayerHelper;
 import net.silentchaos512.lib.util.TimeHelper;
@@ -30,6 +31,7 @@ public class ClientEvents {
   public static boolean playerCanSeeSky = true;
   public static boolean playerHasVanillaClock = true;
   public static boolean playerHasPocketWatch = true;
+  public static long worldTime = 0L;
 
   public static String debugText = "";
 
@@ -61,6 +63,15 @@ public class ClientEvents {
     if (event.phase != Phase.START)
       return;
 
+    int extendedTime = TimeEvents.INSTANCE.getExtendedTime();
+
+    // Make sure world time is correct.
+    if (event.player.world.provider.getDimension() == 0) {
+      if (extendedTime > 0) {
+        event.player.world.setWorldTime(worldTime);
+      }
+    }
+
     /*
      * Replace the sky renderer
      */
@@ -85,15 +96,16 @@ public class ClientEvents {
 
     // If playing on a dedicated server, we should update time here?
     if (!Minecraft.getMinecraft().isSingleplayer()) {
-      if (TimeEvents.INSTANCE.extendedTime > 0) {
-        --TimeEvents.INSTANCE.extendedTime;
+      if (extendedTime > 0) {
+        TimeEvents.INSTANCE.setExtendedTime(extendedTime - 1);
       }
     }
 
     // Update debug text overlay
     World world = event.player.world;
     ClientEvents.debugText = "Time (MC, Ext): " + world.getWorldTime() + ", "
-        + TimeEvents.INSTANCE.extendedTime + "\n" + "Actual Time: "
+        + TimeEvents.INSTANCE.getExtendedTime()
+        + (TimeEvents.INSTANCE.isInExtendedPeriod(world) ? " (E)" : "") + "\n" + "Actual Time: "
         + TimeEvents.INSTANCE.getCurrentTime(world) + " / "
         + TimeEvents.INSTANCE.getTotalDayLength() + "\n" + "Day/Night Length: "
         + TimeEvents.INSTANCE.getDaytimeLength() + ", " + TimeEvents.INSTANCE.getNighttimeLength();

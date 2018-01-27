@@ -10,14 +10,16 @@ import net.silentchaos512.lib.network.MessageSL;
 
 public class MessageSyncTime extends MessageSL {
 
+  public long worldTime;
   public int extendedTime;
 
   public MessageSyncTime() {
 
   }
 
-  public MessageSyncTime(int extendedTime) {
+  public MessageSyncTime(long worldTime, int extendedTime) {
 
+    this.worldTime = worldTime;
     this.extendedTime = extendedTime;
   }
 
