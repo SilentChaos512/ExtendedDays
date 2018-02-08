@@ -1,3 +1,6 @@
+0.2.3
+Removes use of the doDaylightCycle gamerule. You may need to re-enable it if you were on an extended period when you logged off. This should fix compatibility with most if not all mods that affect sleep.
+
 0.2.2
 Added: Compatibility with the Bloodmoon mod. Mimics Bloodmoon's sky rendering and adds a red nighttime clock overlay.
 Added: Config to disable clock overlay entirely.
