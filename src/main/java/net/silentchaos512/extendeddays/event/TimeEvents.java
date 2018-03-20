@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
@@ -263,7 +264,11 @@ public class TimeEvents {
     if (msg.worldTime <= 0 || msg.extendedTime <= 0)
       return;
 
-    Minecraft.getMinecraft().player.world.setWorldTime(msg.worldTime);
+    EntityPlayer player = Minecraft.getMinecraft().player;
+    World world = player == null ? null : player.world;
+    if (world != null) {
+      world.setWorldTime(msg.worldTime);
+    }
     this.extendedTime = msg.extendedTime;
     ClientEvents.worldTime = msg.worldTime;
   }
