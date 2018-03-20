@@ -15,6 +15,8 @@ public class MessageSyncTime extends MessageSL {
 
   public MessageSyncTime() {
 
+    this.worldTime = -1;
+    this.extendedTime = -1;
   }
 
   public MessageSyncTime(long worldTime, int extendedTime) {

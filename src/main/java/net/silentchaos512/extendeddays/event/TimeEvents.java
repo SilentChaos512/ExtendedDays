@@ -50,7 +50,7 @@ public class TimeEvents {
       startExtendedPeriod(event.world, data.extendedTime);
       // Make sure world time is correct.
       if (worldTime > data.worldTime && worldTime < data.worldTime + 600) {
-        if (extendedPeriods.containsKey(data.worldTime) && extendedTime > 0) {
+        if (extendedPeriods.containsKey(data.worldTime) && extendedTime > 0 && data.worldTime > 0) {
           worldTime = data.worldTime;
           event.world.setWorldTime(worldTime);
         }
@@ -233,6 +233,9 @@ public class TimeEvents {
 
   public void setTimeFromPacket(MessageSetTime msg) {
 
+    if (msg.worldTime <= 0 || msg.extendedTime <= 0)
+      return;
+
     MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
     if (server == null)
       return;
@@ -256,6 +259,9 @@ public class TimeEvents {
 
   @SideOnly(Side.CLIENT)
   public void syncTimeFromPacket(MessageSyncTime msg) {
+
+    if (msg.worldTime <= 0 || msg.extendedTime <= 0)
+      return;
 
     Minecraft.getMinecraft().player.world.setWorldTime(msg.worldTime);
     this.extendedTime = msg.extendedTime;

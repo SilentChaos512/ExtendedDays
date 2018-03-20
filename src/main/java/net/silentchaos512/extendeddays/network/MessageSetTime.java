@@ -15,10 +15,14 @@ public class MessageSetTime extends MessageSL {
 
   public MessageSetTime() {
 
+    this.worldTime = -1;
+    this.extendedTime = -1;
   }
 
   public MessageSetTime(long worldTime, int extendedTime) {
 
+    this.worldTime = worldTime;
+    this.extendedTime = extendedTime;
   }
 
   @Override
