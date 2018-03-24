@@ -14,7 +14,7 @@ public class ExtendedDaysSavedData extends WorldSavedData {
   private static final String NBT_WORLD_TIME = "WorldTime";
 
   public int extendedTime = -1;
-  public int worldTime = -1;
+  public long worldTime = -1;
 
   public ExtendedDaysSavedData() {
 
@@ -30,14 +30,14 @@ public class ExtendedDaysSavedData extends WorldSavedData {
   public void readFromNBT(NBTTagCompound nbt) {
 
     extendedTime = nbt.getInteger(NBT_EXTENDED_TIME);
-    worldTime = nbt.getInteger(NBT_WORLD_TIME);
+    worldTime = nbt.getLong(NBT_WORLD_TIME);
   }
 
   @Override
   public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
 
     nbt.setInteger(NBT_EXTENDED_TIME, extendedTime);
-    nbt.setInteger(NBT_WORLD_TIME, worldTime);
+    nbt.setLong(NBT_WORLD_TIME, worldTime);
     return nbt;
   }
 

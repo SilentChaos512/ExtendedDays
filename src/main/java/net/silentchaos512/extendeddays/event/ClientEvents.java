@@ -67,7 +67,9 @@ public class ClientEvents {
 
     // Make sure world time is correct.
     if (event.player.world.provider.getDimension() == 0) {
-      if (extendedTime > 0) {
+      // Setting the world time incorrectly here can change the actual world time?
+      if (extendedTime > 0 && worldTime > 0) {
+        // ExtendedDays.logHelper.info("Client set world time to " + worldTime);
         event.player.world.setWorldTime(worldTime);
       }
     }

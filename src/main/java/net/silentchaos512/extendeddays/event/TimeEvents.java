@@ -39,7 +39,8 @@ public class TimeEvents {
 
     LogHelper log = ExtendedDays.logHelper;
 
-    int worldTime = (int) (event.world.getWorldTime() % 24000);
+    long worldTime = event.world.getWorldTime();
+    int dayTime = (int) (worldTime % 24000L);
 
     ExtendedDaysSavedData data = ExtendedDaysSavedData.get(event.world);
     if (data == null)
@@ -51,9 +52,9 @@ public class TimeEvents {
       startExtendedPeriod(event.world, data.extendedTime);
       // Make sure world time is correct.
       if (worldTime > data.worldTime && worldTime < data.worldTime + 600) {
-        if (extendedPeriods.containsKey(data.worldTime) && extendedTime > 0 && data.worldTime > 0) {
+        if (extendedPeriods.containsKey((int) (data.worldTime % 24000L)) && extendedTime > 0 && data.worldTime > 0) {
           worldTime = data.worldTime;
-          event.world.setWorldTime(worldTime);
+          setWorldTime(event.world, worldTime);
         }
       }
     }
@@ -72,7 +73,7 @@ public class TimeEvents {
     } else {
       // Not on extended time currently. Is it time to start?
       for (Entry<Integer, Float> entry : extendedPeriods.entrySet()) {
-        if (worldTime == entry.getKey()) {
+        if (dayTime == entry.getKey()) {
           // Start a new extended time period.
           int ticks = TimeHelper.ticksFromMinutes(entry.getValue());
           if (ticks > 0) {
@@ -80,7 +81,7 @@ public class TimeEvents {
             startExtendedPeriod(event.world, ticks);
           } else {
             // Shorten time (negative values)
-            event.world.setWorldTime(worldTime - ticks);
+            setWorldTime(event.world, worldTime);
           }
         }
       }
@@ -249,13 +250,32 @@ public class TimeEvents {
   public void setTime(World world, long worldTime, int extendedTime) {
 
     this.extendedTime = extendedTime;
-    world.setWorldTime(worldTime);
+    setWorldTime(world, worldTime);
     ExtendedDaysSavedData data = ExtendedDaysSavedData.get(world);
     if (data != null) {
-      data.worldTime = (int) (worldTime % 24000);
+      data.worldTime = worldTime;
       data.extendedTime = extendedTime;
     }
     ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(worldTime, extendedTime));
+  }
+
+  void setWorldTime(World world, long worldTime) {
+
+    long currentTime = world.getWorldTime();
+    if (currentTime == worldTime) {
+      return;
+    }
+
+    // String str = "Set world time to %d (was %d)";
+    // str = String.format(str, worldTime, currentTime);
+    // ExtendedDays.logHelper.info(str);
+
+    if (worldTime < 1) {
+      // ExtendedDays.logHelper.info(" Blocked because worldTime < 1!");
+      return;
+    }
+
+    world.setWorldTime(worldTime);
   }
 
   @SideOnly(Side.CLIENT)
@@ -267,7 +287,7 @@ public class TimeEvents {
     EntityPlayer player = Minecraft.getMinecraft().player;
     World world = player == null ? null : player.world;
     if (world != null) {
-      world.setWorldTime(msg.worldTime);
+      setWorldTime(world, msg.worldTime);
     }
     this.extendedTime = msg.extendedTime;
     ClientEvents.worldTime = msg.worldTime;
