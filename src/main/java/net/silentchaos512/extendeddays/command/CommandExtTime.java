@@ -15,6 +15,8 @@ import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 import net.silentchaos512.lib.command.CommandBaseSL;
 
+// TODO: Add "advance to day" subcommand?
+
 public class CommandExtTime extends CommandBaseSL {
 
   @Override
@@ -63,6 +65,8 @@ public class CommandExtTime extends CommandBaseSL {
       } catch (NumberFormatException ex) {
         tell(sender, getUsage(sender), false);
       }
+    } else {
+      tell(sender, getUsage(sender), false);
     }
   }
 
@@ -85,6 +89,7 @@ public class CommandExtTime extends CommandBaseSL {
   private void executeSet(MinecraftServer server, ICommandSender sender, long amount,
       int amountExt) {
 
+    ExtendedDays.logHelper.info("Trying to set time (" + amount + ", " + amountExt + ")");
     TimeEvents.INSTANCE.setTime(server.worlds[0], amount, amountExt);
   }
 
