@@ -1,6 +1,10 @@
+0.2.5
+Fixed: World time being set incorrectly to some time in the first day... hopefully.
+
 0.2.4
 Fixed: World time occasionally resetting on world load.
 Fixed (probably): A crash during world load (#16)
+Fixed: A crash when used with Bloodmoon 1.5.3 (#18)
 
 0.2.3
 Removes use of the doDaylightCycle gamerule. You may need to re-enable it if you were on an extended period when you logged off. This should fix compatibility with most if not all mods that affect sleep.
