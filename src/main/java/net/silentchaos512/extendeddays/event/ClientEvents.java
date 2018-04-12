@@ -38,11 +38,13 @@ public class ClientEvents {
   @SubscribeEvent
   public void onRenderDebugText(RenderGameOverlayEvent.Post event) {
 
-    if (!Config.DEBUG_MODE || event.getType() != ElementType.TEXT)
+    if (!Config.DEBUG_MODE || event.getType() != ElementType.TEXT
+        || Minecraft.getMinecraft().gameSettings.showDebugInfo) {
       return;
+    }
 
     GlStateManager.pushMatrix();
-    float scale = 1.0f;
+    float scale = 0.75f;
     GlStateManager.scale(scale, scale, 1.0f);
     int y = 25;
     FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
@@ -110,7 +112,8 @@ public class ClientEvents {
         + (TimeEvents.INSTANCE.isInExtendedPeriod(world) ? " (E)" : "") + "\n" + "Actual Time: "
         + TimeEvents.INSTANCE.getCurrentTime(world) + " / "
         + TimeEvents.INSTANCE.getTotalDayLength() + "\n" + "Day/Night Length: "
-        + TimeEvents.INSTANCE.getDaytimeLength() + ", " + TimeEvents.INSTANCE.getNighttimeLength();
+        + TimeEvents.INSTANCE.getDaytimeLength() + ", " + TimeEvents.INSTANCE.getNighttimeLength()
+        + "\n\nClientEvents#worldTime: " + worldTime;
 
     // We don't want to check for sky visibility or watches every tick.
     if (event.player.ticksExisted % PLAYER_UPDATE_FREQUENCY != 0)

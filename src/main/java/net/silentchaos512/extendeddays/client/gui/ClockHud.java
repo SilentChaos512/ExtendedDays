@@ -25,10 +25,12 @@ public class ClockHud extends Gui {
   @SubscribeEvent
   public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
 
-    if (!Config.CLOCK_ENABLED || event.getType() != ElementType.TEXT)
-      return;
-
     Minecraft mc = Minecraft.getMinecraft();
+    if (!Config.CLOCK_ENABLED || event.getType() != ElementType.TEXT
+        || mc.gameSettings.showDebugInfo) {
+      return;
+    }
+
     EntityPlayer player = mc.player;
     World world = player.world;
 
@@ -85,9 +87,9 @@ public class ClockHud extends Gui {
     drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
 
     if (hasPocketWatch && Config.WATCH_SHOW_TIME) {
-      //currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
-//      int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
-//      int adjustedTime = (int) (24000L * currentTime / totalDayLength);
+      // currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
+      // int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
+      // int adjustedTime = (int) (24000L * currentTime / totalDayLength);
       currentTime = (int) TimeEvents.INSTANCE.getCelestialAdjustedTime(world);
       int adjustedTime = currentTime;
       int hour = adjustedTime / 1000 + 6;
