@@ -1,8 +1,7 @@
-0.2.6
-Changed: Clock HUD and debug info hides when the debug screen (F3) is open.
-
 0.2.5
+Changed: Clock HUD and debug info hides when the debug screen (F3) is open.
 Fixed: World time being set incorrectly to some time in the first day... hopefully.
+Fixed: Sky renderer being replaced in dimension Extended Days does not affect (#20)
 
 0.2.4
 Fixed: World time occasionally resetting on world load.
