@@ -8,15 +8,18 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IRenderHandler;
-import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.compat.BloodmoonCompat;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 
 public class SkyRenderer extends IRenderHandler {
+
+  private static final ResourceLocation MOON_PHASES_TEXTURES = new ResourceLocation("textures/environment/moon_phases.png");
+  private static final ResourceLocation SUN_TEXTURES = new ResourceLocation("textures/environment/sun.png");
 
   @Override
   public void render(float partialTicks, WorldClient world, Minecraft mc) {
@@ -24,7 +27,7 @@ public class SkyRenderer extends IRenderHandler {
     /*
      * Copied from RenderGlobal#renderSky(float, int). Basically just a straight copy. I used access transformers to
      * make the private fields of RenderGlobal I need public.
-     * 
+     *
      * It might be fun to try messing around with this later, try making sky rendering a bit more realistic (lunar
      * cycles, for example). For now, it renders just like vanilla... although with no 3D anaglyph support.
      */
@@ -112,7 +115,7 @@ public class SkyRenderer extends IRenderHandler {
     float f17 = 30.0F;
 
     // Sun
-    mc.renderEngine.bindTexture(RenderGlobal.SUN_TEXTURES);
+    mc.renderEngine.bindTexture(SUN_TEXTURES);
     bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
     bufferbuilder.pos((double) (-f17), 100.0D, (double) (-f17)).tex(0.0D, 0.0D).endVertex();
     bufferbuilder.pos((double) f17, 100.0D, (double) (-f17)).tex(1.0D, 0.0D).endVertex();
@@ -122,7 +125,7 @@ public class SkyRenderer extends IRenderHandler {
     f17 = 20.0F;
 
     // Moon
-    mc.renderEngine.bindTexture(RenderGlobal.MOON_PHASES_TEXTURES);
+    mc.renderEngine.bindTexture(MOON_PHASES_TEXTURES);
     // Moon color
     Vec3d moonColor = getMoonColor(world, partialTicks);
     float moonRed = (float) moonColor.x;
