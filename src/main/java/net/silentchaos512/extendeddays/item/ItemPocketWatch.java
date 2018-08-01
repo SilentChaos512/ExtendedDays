@@ -10,26 +10,21 @@ import net.silentchaos512.lib.item.ItemSL;
 import net.silentchaos512.lib.registry.RecipeMaker;
 
 public class ItemPocketWatch extends ItemSL {
+    public static final String NAME = "pocket_watch";
 
-  public static final String NAME = "pocket_watch";
-
-  public ItemPocketWatch() {
-
-    super(1, ExtendedDays.MOD_ID, NAME);
-  }
-
-  @Override
-  public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot,
-      boolean isSelected) {
-
-    if (world.isRemote) {
-      ClientEvents.playerHasPocketWatch = true;
+    public ItemPocketWatch() {
+        super(1, ExtendedDays.MOD_ID, NAME);
     }
-  }
 
-  @Override
-  public void addRecipes(RecipeMaker recipes) {
+    @Override
+    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
+        if (world.isRemote) {
+            ClientEvents.playerHasPocketWatch = true;
+        }
+    }
 
-    recipes.addShapelessOre(NAME, new ItemStack(this), new ItemStack(Items.CLOCK), "gemQuartz");
-  }
+    @Override
+    public void addRecipes(RecipeMaker recipes) {
+        recipes.addShapelessOre(NAME, new ItemStack(this), new ItemStack(Items.CLOCK), "gemQuartz");
+    }
 }

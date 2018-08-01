@@ -22,68 +22,61 @@ import net.silentchaos512.lib.registry.SRegistry;
 import net.silentchaos512.lib.util.LocalizationHelper;
 import net.silentchaos512.lib.util.LogHelper;
 
-@Mod(//@formatter:off
-    modid = ExtendedDays.MOD_ID,
-    name = ExtendedDays.MOD_NAME,
-    version = ExtendedDays.VERSION,
-    dependencies = ExtendedDays.DEPENDENCIES,
-    guiFactory = "net.silentchaos512.extendeddays.client.gui.config.GuiFactoryExtendedDays")
-//@formatter:on
+@Mod(modid = ExtendedDays.MOD_ID,
+        name = ExtendedDays.MOD_NAME,
+        version = ExtendedDays.VERSION,
+        dependencies = ExtendedDays.DEPENDENCIES,
+        guiFactory = "net.silentchaos512.extendeddays.client.gui.config.GuiFactoryExtendedDays")
 public class ExtendedDays {
+    public static final String MOD_ID = "extendeddays";
+    public static final String MOD_NAME = "Extended Days";
+    public static final String VERSION = "0.2.6";
+    public static final String VERSION_SILENTLIB = "2.3.12";
+    public static final int BUILD_NUM = 0;
+    public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB + ",);after:morpheus";
+    public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
-  public static final String MOD_ID = "extendeddays";
-  public static final String MOD_NAME = "Extended Days";
-  public static final String VERSION = "0.2.6";
-  public static final String VERSION_SILENTLIB = "2.3.12";
-  public static final int BUILD_NUM = 0;
-  public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB + ",);after:morpheus";
-  public static final String RESOURCE_PREFIX = MOD_ID + ":";
+    @Instance
+    public static ExtendedDays instance;
 
-  @Instance
-  public static ExtendedDays instance;
+    @SidedProxy(clientSide = "net.silentchaos512.extendeddays.proxy.ClientProxy", serverSide = "net.silentchaos512.extendeddays.proxy.CommonProxy")
+    public static CommonProxy proxy;
 
-  @SidedProxy(clientSide = "net.silentchaos512.extendeddays.proxy.ClientProxy", serverSide = "net.silentchaos512.extendeddays.proxy.CommonProxy")
-  public static CommonProxy proxy;
+    public static LogHelper logHelper = new LogHelper(MOD_NAME, BUILD_NUM);
+    public static LocalizationHelper localizationHelper;
 
-  public static LogHelper logHelper = new LogHelper(MOD_NAME, BUILD_NUM);
-  public static LocalizationHelper localizationHelper;
+    public static SRegistry registry = new SRegistry(MOD_ID, logHelper);
+    public static NetworkHandlerSL network;
 
-  public static SRegistry registry = new SRegistry(MOD_ID, logHelper);
-  public static NetworkHandlerSL network;
+    @EventHandler
+    public void preInit(FMLPreInitializationEvent event) {
+        localizationHelper = new LocalizationHelper(MOD_ID).setReplaceAmpersand(true);
+        SilentLib.instance.registerLocalizationHelperForMod(MOD_ID, localizationHelper);
 
-  @EventHandler
-  public void preInit(FMLPreInitializationEvent event) {
+        network = new NetworkHandlerSL(MOD_ID);
+        network.register(MessageSyncTime.class, Side.CLIENT);
+        network.register(MessageSetTime.class, Side.SERVER);
 
-    localizationHelper = new LocalizationHelper(MOD_ID).setReplaceAmpersand(true);
-    SilentLib.instance.registerLocalizationHelperForMod(MOD_ID, localizationHelper);
+        Config.INSTANCE.init(event.getSuggestedConfigurationFile());
 
-    network = new NetworkHandlerSL(MOD_ID);
-    network.register(MessageSyncTime.class, Side.CLIENT);
-    network.register(MessageSetTime.class, Side.SERVER);
+        registry.addRegistrationHandler(new ModItems(), Item.class);
 
-    Config.INSTANCE.init(event.getSuggestedConfigurationFile());
+        proxy.preInit(registry, event);
+    }
 
-    registry.addRegistrationHandler(new ModItems(), Item.class);
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        proxy.init(registry, event);
+        Config.INSTANCE.save();
+    }
 
-    proxy.preInit(registry);
-  }
+    @EventHandler
+    public void postInit(FMLPostInitializationEvent event) {
+        proxy.postInit(registry, event);
+    }
 
-  @EventHandler
-  public void init(FMLInitializationEvent event) {
-
-    proxy.init(registry);
-    Config.INSTANCE.save();
-  }
-
-  @EventHandler
-  public void postInit(FMLPostInitializationEvent event) {
-
-    proxy.postInit(registry);
-  }
-
-  @EventHandler
-  public void onServerLoad(FMLServerStartingEvent event) {
-
-    event.registerServerCommand(new CommandExtTime());
-  }
+    @EventHandler
+    public void onServerLoad(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandExtTime());
+    }
 }

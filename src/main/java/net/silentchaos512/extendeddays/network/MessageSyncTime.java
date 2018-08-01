@@ -9,28 +9,23 @@ import net.silentchaos512.lib.network.MessageSL;
 
 
 public class MessageSyncTime extends MessageSL {
+    public long worldTime;
+    public int extendedTime;
 
-  public long worldTime;
-  public int extendedTime;
+    public MessageSyncTime() {
+        this.worldTime = -1;
+        this.extendedTime = -1;
+    }
 
-  public MessageSyncTime() {
+    public MessageSyncTime(long worldTime, int extendedTime) {
+        this.worldTime = worldTime;
+        this.extendedTime = extendedTime;
+    }
 
-    this.worldTime = -1;
-    this.extendedTime = -1;
-  }
-
-  public MessageSyncTime(long worldTime, int extendedTime) {
-
-    this.worldTime = worldTime;
-    this.extendedTime = extendedTime;
-  }
-
-  @Override
-  @SideOnly(Side.CLIENT)
-  public IMessage handleMessage(MessageContext context) {
-
-    TimeEvents.INSTANCE.syncTimeFromPacket(this);
-
-    return null;
-  }
+    @Override
+    @SideOnly(Side.CLIENT)
+    public IMessage handleMessage(MessageContext context) {
+        TimeEvents.INSTANCE.syncTimeFromPacket(this);
+        return null;
+    }
 }
