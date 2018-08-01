@@ -33,11 +33,10 @@ public class ExtendedDays {
 
   public static final String MOD_ID = "extendeddays";
   public static final String MOD_NAME = "Extended Days";
-  public static final String VERSION = "@VERSION@";
-  public static final String VERSION_SILENTLIB = "SL_VERSION";
+  public static final String VERSION = "0.2.6";
+  public static final String VERSION_SILENTLIB = "2.3.12";
   public static final int BUILD_NUM = 0;
-  public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB
-      + ",);after:morpheus";
+  public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB + ",);after:morpheus";
   public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
   @Instance
