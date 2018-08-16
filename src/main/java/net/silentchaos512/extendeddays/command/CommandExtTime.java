@@ -101,7 +101,7 @@ public class CommandExtTime extends CommandBaseSL {
 
     private void tell(ICommandSender sender, String key, boolean fromLocalizationFile, Object... args) {
         String value = fromLocalizationFile
-                ? ExtendedDays.localizationHelper.getLocalizedString("command." + key, args)
+                ? ExtendedDays.i18n.translate("command." + key, args)
                 : key;
         sender.sendMessage(new TextComponentString(value));
     }

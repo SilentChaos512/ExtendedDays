@@ -45,7 +45,7 @@ public class ClockHud extends Gui {
         }
     }
 
-    public void renderClock(Minecraft mc, World world, int screenWidth, int screenHeight, boolean hasPocketWatch) {
+    private void renderClock(Minecraft mc, World world, int screenWidth, int screenHeight, boolean hasPocketWatch) {
         GlStateManager.enableBlend();
         GlStateManager.enableAlpha();
 
@@ -113,7 +113,7 @@ public class ClockHud extends Gui {
         }
     }
 
-    protected void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height, int color) {
+    private void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height, int color) {
         float a = ((color >> 24) & 255) / 255f;
         float r = ((color >> 16) & 255) / 255f;
         float g = ((color >> 8) & 255) / 255f;

@@ -160,6 +160,9 @@ dependencies {
     if (project.hasProperty('sl_version')) {
         compileOnly "com.github.SilentChaos512:SilentLib:${project.sl_version}"
     }
+
+//    compileOnly "com.github.lumien231:Bloodmoon:8cb71258a00dd6406f69f24113b9df9d233c4cff"
+//    compileOnly "com.github.Quetzi:Morpheus:3cbed9ca9bf9a0d9dbff7f25e595297b9e988fee"
 }
 
 processResources {

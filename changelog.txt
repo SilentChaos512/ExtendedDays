@@ -1,3 +1,6 @@
+0.2.6
+Updated for Silent Lib 2.3.18
+
 0.2.5
 Changed: Clock HUD and debug info hides when the debug screen (F3) is open.
 Fixed: World time being set incorrectly to some time in the first day... hopefully.

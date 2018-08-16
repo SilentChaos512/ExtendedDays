@@ -46,7 +46,7 @@ public class TimeEvents {
 
         // log.debug(worldTime, data.worldTime, extendedTime, data.extendedTime);
 
-        if (data != null && data.extendedTime > 0) {
+        if (data.extendedTime > 0) {
             startExtendedPeriod(event.world, data.extendedTime);
             // Make sure world time is correct.
             if (worldTime > data.worldTime && worldTime < data.worldTime + 600) {
@@ -92,11 +92,9 @@ public class TimeEvents {
         }
 
         // Update world save data.
-        if (data != null) {
-            data.extendedTime = extendedTime;
-            data.worldTime = worldTime;
-            data.markDirty();
-        }
+        data.extendedTime = extendedTime;
+        data.worldTime = worldTime;
+        data.markDirty();
     }
 
     @SubscribeEvent

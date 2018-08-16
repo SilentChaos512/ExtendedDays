@@ -13,7 +13,7 @@ public class MorpheusCompat {
     public static class NewDayHandler implements INewDayHandler {
         INewDayHandler parent;
 
-        public NewDayHandler(INewDayHandler parent) {
+        NewDayHandler(INewDayHandler parent) {
             this.parent = parent;
         }
 
@@ -38,8 +38,8 @@ public class MorpheusCompat {
             parent = MorpheusRegistry.registry.get(0);
 
         INewDayHandler newHandler = new NewDayHandler(parent);
-        ExtendedDays.logHelper.info("Replacing Morpheus new day handler for dimension 0!");
-        ExtendedDays.logHelper.info("Parent handler: " + parent);
+        ExtendedDays.logHelper.info("Replacing Morpheus new day handler for dimension {}!", 0);
+        ExtendedDays.logHelper.info("Parent handler: {}", parent);
         Morpheus.register.registerHandler(newHandler, 0);
     }
 }
