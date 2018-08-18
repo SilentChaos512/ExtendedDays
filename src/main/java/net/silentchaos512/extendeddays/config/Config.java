@@ -126,7 +126,7 @@ public class Config extends ConfigBase {
             DEBUG_MODE = loadBoolean("Debug Mode Enabled", CAT_DEBUG, DEFAULT_DEBUG_MODE,
                     COMMENT_DEBUG_MODE);
         } catch (Exception ex) {
-            ExtendedDays.logHelper.severe("Could not load configuration file!");
+            ExtendedDays.logHelper.fatal("Could not load configuration file!");
             ex.printStackTrace();
         }
     }
