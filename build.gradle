@@ -194,7 +194,7 @@ jar {
             attributes 'FMLCorePluginContainsFMLMod': 'true'
             attributes 'FMLCorePlugin': project.coreplugin
         }
-//  attributes 'FMLAT' : ''
+        attributes 'FMLAT' : 'extendeddays_at.cfg'
     }
 }
 
