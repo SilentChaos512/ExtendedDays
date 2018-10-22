@@ -34,7 +34,7 @@ public class ClientEvents {
 
     @SubscribeEvent
     public void onRenderDebugText(RenderGameOverlayEvent.Post event) {
-        if (!Config.DEBUG_MODE || event.getType() != ElementType.TEXT || Minecraft.getMinecraft().gameSettings.showDebugInfo) {
+        if (!Config.debugMode || event.getType() != ElementType.TEXT || Minecraft.getMinecraft().gameSettings.showDebugInfo) {
             return;
         }
 
@@ -73,7 +73,7 @@ public class ClientEvents {
         /*
          * Replace the sky renderer
          */
-        if (Config.SKY_OVERRIDE) {
+        if (Config.skyOverride) {
             Minecraft mc = Minecraft.getMinecraft();
             // Do some null checks. If unable to replace for an extended period, report it to the player.
             if (mc == null || mc.world == null || mc.world.provider == null) {

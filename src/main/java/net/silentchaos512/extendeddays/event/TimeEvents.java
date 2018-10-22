@@ -86,7 +86,7 @@ public class TimeEvents {
         }
 
         // Send packet to client?
-        if (event.world.getTotalWorldTime() % Config.PACKET_DELAY == 0) {
+        if (event.world.getTotalWorldTime() % Config.packetDelay == 0) {
             long time = event.world.getWorldTime();
             ExtendedDays.network.wrapper.sendToAll(new MessageSyncTime(time, extendedTime));
         }

@@ -23,7 +23,7 @@ public class ClockHud extends Gui {
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         Minecraft mc = Minecraft.getMinecraft();
-        if (!Config.CLOCK_ENABLED || event.getType() != ElementType.TEXT || mc.gameSettings.showDebugInfo) {
+        if (!Config.clockEnabled || event.getType() != ElementType.TEXT || mc.gameSettings.showDebugInfo) {
             return;
         }
 
@@ -40,7 +40,7 @@ public class ClockHud extends Gui {
         if (ClientEvents.playerHasPocketWatch) {
             renderClock(mc, world, width, height, true);
         }
-        if (Config.CLOCK_SHOW_ALWAYS || ClientEvents.playerHasVanillaClock || ClientEvents.playerCanSeeSky) {
+        if (Config.clockShowAlways || ClientEvents.playerHasVanillaClock || ClientEvents.playerCanSeeSky) {
             renderClock(mc, world, width, height, false);
         }
     }
@@ -51,10 +51,10 @@ public class ClockHud extends Gui {
 
         mc.renderEngine.bindTexture(TEXTURE);
 
-        int posX = Config.CLOCK_POS_X;
+        int posX = Config.clockPosX;
         if (posX < 0)
             posX = posX + screenWidth - 80;
-        int posY = Config.CLOCK_POS_Y;
+        int posY = Config.clockPosY;
         if (posY < 0)
             posY = posY + screenHeight - 12;
 
@@ -79,7 +79,7 @@ public class ClockHud extends Gui {
         int x = 2 + (int) (posX + 78 * ((float) currentTime) / dayLength) - 6;
         drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
 
-        if (hasPocketWatch && Config.WATCH_SHOW_TIME) {
+        if (hasPocketWatch && Config.watchShowTime) {
             // currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
             // int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
             // int adjustedTime = (int) (24000L * currentTime / totalDayLength);
@@ -92,7 +92,7 @@ public class ClockHud extends Gui {
 
             // Adjust for 12-hour clock
             String suffix = "";
-            if (Config.WATCH_USE_AM_PM) {
+            if (Config.watchUse12Hour) {
                 suffix = "AM";
                 if (hour > 12) {
                     // Afternoon
@@ -107,7 +107,7 @@ public class ClockHud extends Gui {
 
             String str = String.format("%d:%02d %s", hour, minute, suffix);
             int strWidth = mc.fontRenderer.getStringWidth(str);
-            int clockX = posX + (Config.CLOCK_POS_X < 0 ? -(strWidth + 5) : 85);
+            int clockX = posX + (Config.clockPosX < 0 ? -(strWidth + 5) : 85);
             int clockY = posY + mc.fontRenderer.FONT_HEIGHT / 2 - 2;
             mc.fontRenderer.drawStringWithShadow(str, clockX, clockY, 0xFFFFFF);
         }

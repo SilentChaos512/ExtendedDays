@@ -17,7 +17,7 @@ public class CommonProxy {
         MinecraftForge.EVENT_BUS.register(TimeEvents.INSTANCE);
 
         // Morpheus compat
-        if (Loader.isModLoaded("morpheus") && Config.MORPHEUS_OVERRIDE)
+        if (Loader.isModLoaded("morpheus") && Config.morpheusOverride)
             MorpheusCompat.init();
     }
 
