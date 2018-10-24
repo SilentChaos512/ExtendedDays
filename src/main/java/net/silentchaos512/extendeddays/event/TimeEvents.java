@@ -32,7 +32,7 @@ public class TimeEvents {
     @SubscribeEvent
     public void onWorldTick(WorldTickEvent event) {
         // Overworld only right now.
-        if (event.phase != Phase.START || event.world.provider.getDimension() != 0)
+        if (event.phase != Phase.START || event.world.provider.getDimension() != 0 || !event.world.getGameRules().getBoolean("doDaylightCycle"))
             return;
 
         LogHelper log = ExtendedDays.logHelper;
