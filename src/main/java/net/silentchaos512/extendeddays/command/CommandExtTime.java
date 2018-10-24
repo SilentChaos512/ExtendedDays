@@ -2,7 +2,6 @@ package net.silentchaos512.extendeddays.command;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -65,7 +64,7 @@ public class CommandExtTime extends CommandBaseSL {
     private void executeGet(MinecraftServer server, ICommandSender sender) {
         World world = server.worlds[0];
         int currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
-        int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength();
+        int totalDayLength = TimeEvents.INSTANCE.getTotalDayLength(world);
         String str = String.format("Actual time: %d / %d", currentTime, totalDayLength);
         tell(sender, str, false);
     }
@@ -79,14 +78,6 @@ public class CommandExtTime extends CommandBaseSL {
     private void executeSet(MinecraftServer server, ICommandSender sender, long amount, int amountExt) {
         ExtendedDays.logHelper.info("Trying to set time ({}, {})", amount, amountExt);
         TimeEvents.INSTANCE.setTime(server.worlds[0], amount, amountExt);
-    }
-
-    @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-
-        return ((server.isDedicatedServer() && !(sender instanceof EntityPlayer))
-                || server.isSinglePlayer() && server.worlds[0].getWorldInfo().areCommandsAllowed())
-                || server.getPlayerList().getOppedPlayers().getGameProfileFromName(sender.getName()) != null;
     }
 
     @Override

@@ -32,6 +32,7 @@ public class TimeEvents {
     @SubscribeEvent
     public void onWorldTick(WorldTickEvent event) {
         // Overworld only right now.
+//        ExtendedDays.logHelper.debug("{}, {}", event.world.provider.getDimension(), event.world.provider.getDimensionType());
         if (event.phase != Phase.START || event.world.provider.getDimension() != 0 || !event.world.getGameRules().getBoolean("doDaylightCycle"))
             return;
 
@@ -154,12 +155,13 @@ public class TimeEvents {
 
     /**
      * Gets the current time, adjusted to include extended periods.
-     *
-     * @param world
-     * @return
      */
     public int getCurrentTime(World world) {
         int result = (int) (world.getWorldTime() % 24000);
+        if (!isOverworld(world)) {
+            return result;
+        }
+
         int worldTime = result;
         for (Entry<Integer, Float> entry : extendedPeriods.entrySet()) {
             int ticksFromMinutes = TimeHelper.ticksFromMinutes(entry.getValue());
@@ -183,19 +185,25 @@ public class TimeEvents {
 
     /**
      * Gets the length of a day, adjusted to include extended periods.
-     *
-     * @return
      */
-    public int getTotalDayLength() {
+    public int getTotalDayLength(World world) {
         int result = 24000;
+        if (!isOverworld(world)) {
+            return result;
+        }
+
         for (float minutes : extendedPeriods.values()) {
             result += TimeHelper.ticksFromMinutes(minutes);
         }
         return result;
     }
 
-    public int getDaytimeLength() {
+    public int getDaytimeLength(World world) {
         int result = 12000;
+        if (!isOverworld(world)) {
+            return result;
+        }
+
         for (Entry<Integer, Float> entry : extendedPeriods.entrySet()) {
             if (entry.getKey() < 12000) {
                 result += TimeHelper.ticksFromMinutes(entry.getValue());
@@ -204,8 +212,12 @@ public class TimeEvents {
         return result;
     }
 
-    public int getNighttimeLength() {
+    public int getNighttimeLength(World world) {
         int result = 12000;
+        if (!isOverworld(world)) {
+            return result;
+        }
+
         for (Entry<Integer, Float> entry : extendedPeriods.entrySet()) {
             if (entry.getKey() >= 12000) {
                 result += TimeHelper.ticksFromMinutes(entry.getValue());
@@ -243,14 +255,13 @@ public class TimeEvents {
     }
 
     void setWorldTime(World world, long worldTime) {
-        long currentTime = world.getWorldTime();
-        if (currentTime == worldTime) {
+        if (world.getWorldTime() == worldTime || !isOverworld(world)) {
             return;
         }
 
-        // String str = "Set world time to %d (was %d)";
-        // str = String.format(str, worldTime, currentTime);
-        // ExtendedDays.logHelper.info(str);
+//         String str = "Set world time to %d (was %d)";
+//         str = String.format(str, worldTime, currentTime);
+//         ExtendedDays.logHelper.info(str);
 
         if (worldTime < 1) {
             // ExtendedDays.logHelper.info(" Blocked because worldTime < 1!");
@@ -275,16 +286,20 @@ public class TimeEvents {
     }
 
     public double getAdjustedWorldTime(World world) {
-        return 24000.0 * getCurrentTime(world) / getTotalDayLength();
+        return 24000.0 * getCurrentTime(world) / getTotalDayLength(world);
     }
 
     public double getCelestialAdjustedTime(World world) {
         int currentTime = getCurrentTime(world);
-        if (currentTime >= getDaytimeLength()) {
-            int nighttime = currentTime - getDaytimeLength();
-            return 12000.0 * nighttime / getNighttimeLength() + 12000;
+        if (currentTime >= getDaytimeLength(world)) {
+            int nighttime = currentTime - getDaytimeLength(world);
+            return 12000.0 * nighttime / getNighttimeLength(world) + 12000;
         } else {
-            return 12000.0 * currentTime / getDaytimeLength();
+            return 12000.0 * currentTime / getDaytimeLength(world);
         }
+    }
+
+    public static boolean isOverworld(World world) {
+        return world.provider.getDimension() == 0;
     }
 }

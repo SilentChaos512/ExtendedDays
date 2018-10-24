@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.silentchaos512.extendeddays.client.render.SkyRenderer;
 import net.silentchaos512.extendeddays.config.Config;
-import net.silentchaos512.extendeddays.item.ItemPocketWatch;
+import net.silentchaos512.extendeddays.init.ModItems;
 import net.silentchaos512.lib.util.ChatHelper;
 import net.silentchaos512.lib.util.PlayerHelper;
 import net.silentchaos512.lib.util.TimeHelper;
@@ -62,21 +62,24 @@ public class ClientEvents {
         int extendedTime = TimeEvents.INSTANCE.getExtendedTime();
 
         // Make sure world time is correct.
-        if (event.player.world.provider.getDimension() == 0) {
+        final Minecraft mc = Minecraft.getMinecraft();
+        final World world = mc.world;
+        final boolean isOverworld = TimeEvents.isOverworld(world);
+
+        if (isOverworld) {
             // Setting the world time incorrectly here can change the actual world time?
             if (extendedTime > 0 && worldTime > 0) {
-                // ExtendedDays.logHelper.info("Client set world time to " + worldTime);
-                event.player.world.setWorldTime(worldTime);
+//                 ExtendedDays.logHelper.info("Client set world time to " + worldTime);
+                world.setWorldTime(worldTime);
             }
         }
 
         /*
          * Replace the sky renderer
          */
-        if (Config.skyOverride) {
-            Minecraft mc = Minecraft.getMinecraft();
+        if (Config.skyOverride && isOverworld) {
             // Do some null checks. If unable to replace for an extended period, report it to the player.
-            if (mc == null || mc.world == null || mc.world.provider == null) {
+            if (world == null || world.provider == null) {
                 ++ticksUnableToReplaceRenderer;
                 if (!reportedUnableToReplaceRenderer
                         && ticksUnableToReplaceRenderer > RENDERER_ERROR_REPORT_DELAY) {
@@ -86,44 +89,38 @@ public class ClientEvents {
                 return;
             }
             WorldProvider provider = mc.world.provider;
-            if (provider.getDimension() == 0 && !(provider.getSkyRenderer() instanceof SkyRenderer)) {
+            if (!(provider.getSkyRenderer() instanceof SkyRenderer)) {
                 provider.setSkyRenderer(new SkyRenderer());
                 ticksUnableToReplaceRenderer = 0;
             }
         }
 
         // If playing on a dedicated server, we should update time here?
-        if (!Minecraft.getMinecraft().isSingleplayer()) {
-            if (extendedTime > 0) {
-                TimeEvents.INSTANCE.setExtendedTime(extendedTime - 1);
-            }
+        if (!Minecraft.getMinecraft().isSingleplayer() && isOverworld && extendedTime > 0) {
+            TimeEvents.INSTANCE.setExtendedTime(extendedTime - 1);
         }
 
         // Update debug text overlay
-        World world = event.player.world;
         ClientEvents.debugText = "Time (MC, Ext): " + world.getWorldTime() + ", "
                 + TimeEvents.INSTANCE.getExtendedTime()
                 + (TimeEvents.INSTANCE.isInExtendedPeriod(world) ? " (E)" : "") + "\n" + "Actual Time: "
                 + TimeEvents.INSTANCE.getCurrentTime(world) + " / "
-                + TimeEvents.INSTANCE.getTotalDayLength() + "\n" + "Day/Night Length: "
-                + TimeEvents.INSTANCE.getDaytimeLength() + ", " + TimeEvents.INSTANCE.getNighttimeLength()
-                + "\n\nClientEvents#worldTime: " + worldTime;
+                + TimeEvents.INSTANCE.getTotalDayLength(world) + "\n" + "Day/Night Length: "
+                + TimeEvents.INSTANCE.getDaytimeLength(world) + ", " + TimeEvents.INSTANCE.getNighttimeLength(world)
+                + "\n\nClientEvents#worldTime: " + worldTime + "\n"
+                + "Dimension: " + world.provider.getDimension() + ", " + world.provider.getDimensionType();
 
         // We don't want to check for sky visibility or watches every tick.
-        if (event.player.ticksExisted % PLAYER_UPDATE_FREQUENCY != 0)
-            return;
-
-        // Check if player has a clear sky overhead.
-        playerCanSeeSky = checkCanPlayerSeeSky(event.player);
-        // Check if player has a pocket watch or vanilla clock.
-        checkPlayerHasWatchOrClock(event.player);
+        if (event.player.ticksExisted % PLAYER_UPDATE_FREQUENCY == 0) {
+            // Check if player has a clear sky overhead.
+            playerCanSeeSky = checkCanPlayerSeeSky(event.player);
+            // Check if player has a pocket watch or vanilla clock.
+            checkPlayerHasWatchOrClock(event.player);
+        }
     }
 
     /**
      * Determines if the player can "see the sky". Basically just ray traces for solid blocks.
-     *
-     * @param player
-     * @return
      */
     private boolean checkCanPlayerSeeSky(EntityPlayer player) {
         if (player == null)
@@ -137,13 +134,13 @@ public class ClientEvents {
         playerHasVanillaClock = playerHasPocketWatch = false;
 
         for (ItemStack stack : PlayerHelper.getNonEmptyStacks(player, true, true, false)) {
-            if (stack.getItem() instanceof ItemClock) {
-                playerHasVanillaClock = true;
-                // Keep looking, player may have a pocket watch as well.
-            } else if (stack.getItem() instanceof ItemPocketWatch) {
+            if (stack.getItem() == ModItems.POCKET_WATCH) {
                 playerHasPocketWatch = true;
                 // Stop looking, pocket watch is best time-telling device!
                 return;
+            } else if (stack.getItem() instanceof ItemClock) {
+                playerHasVanillaClock = true;
+                // Keep looking, player may have a pocket watch as well.
             }
         }
     }

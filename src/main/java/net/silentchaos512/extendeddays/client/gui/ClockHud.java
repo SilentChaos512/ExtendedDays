@@ -77,11 +77,11 @@ public class ClockHud extends Gui {
 
         // Sun/Moon
         texX = 87;
-        int dayLength = isNight ? TimeEvents.INSTANCE.getNighttimeLength()
-                : TimeEvents.INSTANCE.getDaytimeLength();
+        int dayLength = isNight ? TimeEvents.INSTANCE.getNighttimeLength(world)
+                : TimeEvents.INSTANCE.getDaytimeLength(world);
         int currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
         if (isNight)
-            currentTime -= TimeEvents.INSTANCE.getDaytimeLength();
+            currentTime -= TimeEvents.INSTANCE.getDaytimeLength(world);
         int x = 2 + (int) (posX + 78 * ((float) currentTime) / dayLength) - 6;
         drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
 
