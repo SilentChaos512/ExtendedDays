@@ -18,7 +18,13 @@ import net.silentchaos512.extendeddays.event.TimeEvents;
 public class ClockHud extends Gui {
     public static final ClockHud INSTANCE = new ClockHud();
 
-    public static final ResourceLocation TEXTURE = new ResourceLocation(ExtendedDays.MOD_ID, "textures/gui/hud.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(ExtendedDays.MOD_ID, "textures/gui/hud.png");
+    private static final int CLOCK_BAR_WIDTH = 82;
+    private static final int CLOCK_BAR_HEIGHT = 12;
+
+    public enum TextPosition {
+        AUTO, LEFT, RIGHT, TOP, BOTTOM
+    }
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
@@ -53,24 +59,24 @@ public class ClockHud extends Gui {
 
         int posX = Config.clockPosX;
         if (posX < 0)
-            posX = posX + screenWidth - 80;
+            posX = posX + screenWidth - CLOCK_BAR_WIDTH;
         int posY = Config.clockPosY;
         if (posY < 0)
-            posY = posY + screenHeight - 12;
+            posY = posY + screenHeight - CLOCK_BAR_HEIGHT;
 
         long worldTime = world.getWorldTime() % 24000;
         boolean isNight = worldTime > 12000;
 
         // Main bar
         int texX = 0;
-        int texY = BloodmoonCompat.INSTANCE.isBloodmoonActive() ? 24 : isNight ? 12 : 0;
-        drawTexturedModalRect(posX, posY, texX, texY, 80, 12, 0xAAFFFFFF);
+        int texY = CLOCK_BAR_HEIGHT * (BloodmoonCompat.INSTANCE.isBloodmoonActive() ? 2 : isNight ? 1 : 0);
+        drawTexturedModalRect(posX, posY, texX, texY, CLOCK_BAR_WIDTH, CLOCK_BAR_HEIGHT, 0xAAFFFFFF);
 
         // Extended period markers
         // TODO
 
         // Sun/Moon
-        texX = 84;
+        texX = 87;
         int dayLength = isNight ? TimeEvents.INSTANCE.getNighttimeLength()
                 : TimeEvents.INSTANCE.getDaytimeLength();
         int currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
@@ -105,13 +111,43 @@ public class ClockHud extends Gui {
                 }
             }
 
+            // TODO: Better formatting options, consider other locales?
             String str = String.format("%d:%02d %s", hour, minute, suffix);
             int strWidth = mc.fontRenderer.getStringWidth(str);
-            int clockX = posX + (Config.clockPosX < 0 ? -(strWidth + 5) : 85);
-            int clockY = posY + mc.fontRenderer.FONT_HEIGHT / 2 - 2;
+            int clockX = getTimeTextPosX(mc, posX, strWidth);
+            int clockY = getTimeTextPosY(mc, posY, strWidth);
             mc.fontRenderer.drawStringWithShadow(str, clockX, clockY, 0xFFFFFF);
         }
     }
+
+    private static int getTimeTextPosX(Minecraft mc, int baseX, int strWidth) {
+        switch (Config.clockTextPosition) {
+            case AUTO:
+                return baseX + (Config.clockPosX < 0 ? -(strWidth + 5) : CLOCK_BAR_WIDTH);
+            case LEFT:
+                return baseX + -(strWidth + 5);
+            case RIGHT:
+                return baseX + CLOCK_BAR_WIDTH;
+            case TOP:
+            case BOTTOM:
+                return baseX + CLOCK_BAR_WIDTH / 2 - strWidth / 2;
+        }
+        throw new IllegalStateException("Unknown clock text position: " + Config.clockTextPosition);
+    }
+    private static int getTimeTextPosY(Minecraft mc, int baseY, int strWidth) {
+        switch (Config.clockTextPosition) {
+            case AUTO:
+            case LEFT:
+            case RIGHT:
+                return baseY + mc.fontRenderer.FONT_HEIGHT / 2 - 2;
+            case TOP:
+                return baseY - 10;
+            case BOTTOM:
+                return baseY + 13;
+        }
+        throw new IllegalStateException("Unknown clock text position: " + Config.clockTextPosition);
+    }
+
 
     private void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height, int color) {
         float a = ((color >> 24) & 255) / 255f;

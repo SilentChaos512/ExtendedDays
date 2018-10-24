@@ -23,8 +23,6 @@ import net.silentchaos512.lib.registry.SRegistry;
 import net.silentchaos512.lib.util.I18nHelper;
 import net.silentchaos512.lib.util.LogHelper;
 
-import java.util.function.Consumer;
-
 @Mod(modid = ExtendedDays.MOD_ID,
         name = ExtendedDays.MOD_NAME,
         version = ExtendedDays.VERSION,
@@ -35,7 +33,7 @@ import java.util.function.Consumer;
 public class ExtendedDays implements IModBase {
     public static final String MOD_ID = "extendeddays";
     public static final String MOD_NAME = "Extended Days";
-    public static final String VERSION = "0.2.7";
+    public static final String VERSION = "0.2.8";
     public static final String VERSION_SILENTLIB = "3.0.0";
     public static final int BUILD_NUM = 0;
     public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB + ",);after:morpheus";
@@ -63,7 +61,7 @@ public class ExtendedDays implements IModBase {
 
         Config.INSTANCE.init(event.getSuggestedConfigurationFile());
 
-        registry.addRegistrationHandler((Consumer<SRegistry>) ModItems::registerAll, Item.class);
+        registry.addRegistrationHandler(ModItems::registerAll, Item.class);
 
         proxy.preInit(registry, event);
     }

@@ -2,6 +2,7 @@ package net.silentchaos512.extendeddays.config;
 
 import net.minecraftforge.common.config.Configuration;
 import net.silentchaos512.extendeddays.ExtendedDays;
+import net.silentchaos512.extendeddays.client.gui.ClockHud;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 import net.silentchaos512.lib.config.ConfigBaseNew;
 import net.silentchaos512.lib.config.ConfigMultiValueLineParser;
@@ -10,6 +11,15 @@ import net.silentchaos512.lib.util.I18nHelper;
 import net.silentchaos512.lib.util.LogHelper;
 
 public final class Config extends ConfigBaseNew {
+    private static final String CAT_MAIN = "main";
+    private static final String CAT_CLIENT = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "client";
+    private static final String CAT_CLOCK = CAT_CLIENT + Configuration.CATEGORY_SPLITTER + "clock_hud";
+    private static final String CAT_COMPAT = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "compatibility";
+    private static final String CAT_DEBUG = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "debug";
+    private static final String CAT_NETWORK = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "network";
+    private static final String CAT_SKY = CAT_CLIENT + Configuration.CATEGORY_SPLITTER + "sky";
+    private static final String CAT_TIME = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "time";
+
     @ConfigOption(name = "Enabled", category = CAT_CLOCK)
     @ConfigOption.BooleanDefault(true)
     @ConfigOption.Comment("If set to false, the clock will not render under any circumstances.")
@@ -26,6 +36,7 @@ public final class Config extends ConfigBaseNew {
     @ConfigOption.BooleanDefault(false)
     @ConfigOption.Comment("If enabled, the clock HUD will show at all times. Otherwise, you must either be above ground, able to see the sky, or have a watch.")
     public static boolean clockShowAlways;
+    public static ClockHud.TextPosition clockTextPosition;
     @ConfigOption(name = "Debug Mode Enabled", category = CAT_DEBUG)
     @ConfigOption.BooleanDefault(false)
     @ConfigOption.Comment("When enabled, additional information may be logged or displayed on screen.")
@@ -59,15 +70,6 @@ public final class Config extends ConfigBaseNew {
             + " numbers you would use in the \"/time set\" command). The second is the number of minutes"
             + " to add (real minutes, not ticks! You can use non-whole numbers if you want to).";
 
-    private static final String CAT_MAIN = "main";
-    private static final String CAT_CLIENT = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "client";
-    private static final String CAT_CLOCK = CAT_CLIENT + Configuration.CATEGORY_SPLITTER + "clock_hud";
-    private static final String CAT_COMPAT = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "compatibility";
-    private static final String CAT_DEBUG = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "debug";
-    private static final String CAT_NETWORK = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "network";
-    private static final String CAT_SKY = CAT_CLIENT + Configuration.CATEGORY_SPLITTER + "sky";
-    private static final String CAT_TIME = CAT_MAIN + Configuration.CATEGORY_SPLITTER + "time";
-
     public static final Config INSTANCE = new Config();
 
     private Config() {
@@ -92,6 +94,9 @@ public final class Config extends ConfigBaseNew {
                     TimeEvents.extendedPeriods.put((int) values[0], (float) values[1]);
                 }
             }
+
+            clockTextPosition = loadEnum("Text Position", CAT_CLOCK, ClockHud.TextPosition.class, ClockHud.TextPosition.AUTO,
+                    "Positioning of time text, relative to the clock bar. AUTO will position it either LEFT or RIGHT, depending on where the clock bar is anchored.");
         } catch (Exception ex) {
             ExtendedDays.logHelper.fatal("Could not load configuration file!");
             ex.printStackTrace();
