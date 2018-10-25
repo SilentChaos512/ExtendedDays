@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mod breaking time in other dimensions, should completely ignore everything but the overworld now [#25, #29]
 - Clock bar displaying incorrect time in other dimensions
 - Extended periods now respect the doDaylightCycle gamerule
+- Pocket watch recipe now has a JSON file, instead of direct register (oops)
+- Miscellaneous small fixes (removes some warnings from log)
 
 ## [0.2.7]
 - Updated for Silent Lib 3.0.x

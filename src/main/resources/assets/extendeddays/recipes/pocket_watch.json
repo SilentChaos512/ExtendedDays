@@ -1,0 +1,15 @@
+{
+  "ingredients": [
+    {
+      "item": "minecraft:clock"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "gemQuartz"
+    }
+  ],
+  "type": "forge:ore_shapeless",
+  "result": {
+    "item": "extendeddays:pocket_watch"
+  }
+}

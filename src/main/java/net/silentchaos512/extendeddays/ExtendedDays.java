@@ -34,7 +34,7 @@ public class ExtendedDays implements IModBase {
     public static final String MOD_ID = "extendeddays";
     public static final String MOD_NAME = "Extended Days";
     public static final String VERSION = "0.2.8";
-    public static final String VERSION_SILENTLIB = "3.0.0";
+    public static final String VERSION_SILENTLIB = "3.0.7";
     public static final int BUILD_NUM = 0;
     public static final String DEPENDENCIES = "required-after:silentlib@[" + VERSION_SILENTLIB + ",);after:morpheus";
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
@@ -53,6 +53,7 @@ public class ExtendedDays implements IModBase {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        registry.setMod(this);
         registry.getRecipeMaker().setJsonHellMode(isDevBuild());
 
         network = new NetworkHandlerSL(MOD_ID);

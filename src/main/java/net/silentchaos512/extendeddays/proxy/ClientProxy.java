@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.silentchaos512.extendeddays.client.gui.ClockHud;
 import net.silentchaos512.extendeddays.event.ClientEvents;
+import net.silentchaos512.extendeddays.event.DebugOverlay;
 import net.silentchaos512.lib.registry.SRegistry;
 
 public class ClientProxy extends CommonProxy {
@@ -14,6 +15,7 @@ public class ClientProxy extends CommonProxy {
         super.preInit(registry, event);
         registry.clientPreInit(event);
 
+        DebugOverlay.init();
         MinecraftForge.EVENT_BUS.register(new ClientEvents());
         MinecraftForge.EVENT_BUS.register(ClockHud.INSTANCE);
     }
@@ -27,6 +29,6 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void postInit(SRegistry registry, FMLPostInitializationEvent event) {
         super.postInit(registry, event);
-        registry.postInit(event);
+        registry.clientPostInit(event);
     }
 }
