@@ -14,13 +14,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.IRenderHandler;
 import net.silentchaos512.extendeddays.compat.BloodmoonCompat;
 import net.silentchaos512.extendeddays.event.TimeEvents;
+import net.silentchaos512.lib.util.GameUtil;
 
 public class SkyRenderer extends IRenderHandler {
+    private static final boolean DISABLE_IN_DEV = true;
     private static final ResourceLocation MOON_PHASES_TEXTURES = new ResourceLocation("textures/environment/moon_phases.png");
     private static final ResourceLocation SUN_TEXTURES = new ResourceLocation("textures/environment/sun.png");
 
     @Override
     public void render(float partialTicks, WorldClient world, Minecraft mc) {
+        // Need to disable in dev, as access transformers often fail in multi-project environments.
+        if (GameUtil.isDeobfuscated() && DISABLE_IN_DEV) return;
 
         /*
          * Copied from RenderGlobal#renderSky(float, int). Basically just a straight copy. I used access transformers to
