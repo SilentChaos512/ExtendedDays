@@ -1,8 +1,6 @@
 package net.silentchaos512.extendeddays.event;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemClock;
 import net.minecraft.item.ItemStack;
@@ -10,8 +8,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
@@ -29,26 +25,6 @@ public class ClientEvents {
     public static boolean playerHasVanillaClock = true;
     public static boolean playerHasPocketWatch = true;
     public static long worldTime = 0L;
-
-    public static String debugText = "";
-
-    @SubscribeEvent
-    public void onRenderDebugText(RenderGameOverlayEvent.Post event) {
-        if (!Config.debugMode || event.getType() != ElementType.TEXT || Minecraft.getMinecraft().gameSettings.showDebugInfo) {
-            return;
-        }
-
-        GlStateManager.pushMatrix();
-        float scale = 0.75f;
-        GlStateManager.scale(scale, scale, 1.0f);
-        int y = 25;
-        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-        for (String line : debugText.split("\\n")) {
-            fontRenderer.drawStringWithShadow(line, 5, y, 0xFFFFFF);
-            y += 10;
-        }
-        GlStateManager.popMatrix();
-    }
 
     private static final int RENDERER_ERROR_REPORT_DELAY = TimeHelper.ticksFromSeconds(30);
     private int ticksUnableToReplaceRenderer = 0;
@@ -99,16 +75,6 @@ public class ClientEvents {
         if (!Minecraft.getMinecraft().isSingleplayer() && isOverworld && extendedTime > 0) {
             TimeEvents.INSTANCE.setExtendedTime(extendedTime - 1);
         }
-
-        // Update debug text overlay
-        ClientEvents.debugText = "Time (MC, Ext): " + world.getWorldTime() + ", "
-                + TimeEvents.INSTANCE.getExtendedTime()
-                + (TimeEvents.INSTANCE.isInExtendedPeriod(world) ? " (E)" : "") + "\n" + "Actual Time: "
-                + TimeEvents.INSTANCE.getCurrentTime(world) + " / "
-                + TimeEvents.INSTANCE.getTotalDayLength(world) + "\n" + "Day/Night Length: "
-                + TimeEvents.INSTANCE.getDaytimeLength(world) + ", " + TimeEvents.INSTANCE.getNighttimeLength(world)
-                + "\n\nClientEvents#worldTime: " + worldTime + "\n"
-                + "Dimension: " + world.provider.getDimension() + ", " + world.provider.getDimensionType();
 
         // We don't want to check for sky visibility or watches every tick.
         if (event.player.ticksExisted % PLAYER_UPDATE_FREQUENCY == 0) {
