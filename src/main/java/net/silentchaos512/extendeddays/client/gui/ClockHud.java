@@ -21,6 +21,8 @@ public class ClockHud extends Gui {
     private static final ResourceLocation TEXTURE = new ResourceLocation(ExtendedDays.MOD_ID, "textures/gui/hud.png");
     private static final int CLOCK_BAR_WIDTH = 82;
     private static final int CLOCK_BAR_HEIGHT = 12;
+    private static final int TIME_COLOR_NORMAL = 0xDDFFDD;
+    private static final int TIME_COLOR_EXTENDED = 0xFFDDDD;
 
     public enum TextPosition {
         AUTO, LEFT, RIGHT, TOP, BOTTOM
@@ -51,7 +53,11 @@ public class ClockHud extends Gui {
         }
     }
 
+    // FIXME: Whenever ClientEvents.playerHasPocketWatch is true, everything becomes less transparent... wat?
+    // Changing hasPocketWatch to false of removing the block that references it has no affect on the issue.
+    // GL push/pop matrix changes nothing. enableBlend and enableAlpha seems necessary for transparency.
     private void renderClock(Minecraft mc, World world, int screenWidth, int screenHeight, boolean hasPocketWatch) {
+        GlStateManager.pushMatrix();
         GlStateManager.enableBlend();
         GlStateManager.enableAlpha();
 
@@ -83,7 +89,7 @@ public class ClockHud extends Gui {
         if (isNight)
             currentTime -= TimeEvents.INSTANCE.getDaytimeLength(world);
         int x = 2 + (int) (posX + 78 * ((float) currentTime) / dayLength) - 6;
-        drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xCCFFFFFF);
+        drawTexturedModalRect(x, posY, texX, texY, 12, 12, 0xDDFFFFFF);
 
         if (hasPocketWatch && Config.watchShowTime) {
             // currentTime = TimeEvents.INSTANCE.getCurrentTime(world);
@@ -99,11 +105,11 @@ public class ClockHud extends Gui {
             // Adjust for 12-hour clock
             String suffix = "";
             if (Config.watchUse12Hour) {
-                suffix = "AM";
+                suffix = " AM";
                 if (hour > 12) {
                     // Afternoon
                     hour -= 12;
-                    suffix = "PM";
+                    suffix = " PM";
                 }
                 if (hour == 0) {
                     // Midnight
@@ -112,22 +118,25 @@ public class ClockHud extends Gui {
             }
 
             // TODO: Better formatting options, consider other locales?
-            String str = String.format("%d:%02d %s", hour, minute, suffix);
+            String str = String.format("%d:%02d%s", hour, minute, suffix);
             int strWidth = mc.fontRenderer.getStringWidth(str);
             int clockX = getTimeTextPosX(mc, posX, strWidth);
             int clockY = getTimeTextPosY(mc, posY, strWidth);
-            mc.fontRenderer.drawStringWithShadow(str, clockX, clockY, 0xFFFFFF);
+            int color = TimeEvents.INSTANCE.isInExtendedPeriod(world) ? TIME_COLOR_EXTENDED : TIME_COLOR_NORMAL;
+            mc.fontRenderer.drawStringWithShadow(str, clockX, clockY, color);
         }
+
+        GlStateManager.popMatrix();
     }
 
     private static int getTimeTextPosX(Minecraft mc, int baseX, int strWidth) {
         switch (Config.clockTextPosition) {
             case AUTO:
-                return baseX + (Config.clockPosX < 0 ? -(strWidth + 5) : CLOCK_BAR_WIDTH);
+                return baseX + (Config.clockPosX < 0 ? -(strWidth + 5) : CLOCK_BAR_WIDTH + 5);
             case LEFT:
                 return baseX + -(strWidth + 5);
             case RIGHT:
-                return baseX + CLOCK_BAR_WIDTH;
+                return baseX + CLOCK_BAR_WIDTH + 5;
             case TOP:
             case BOTTOM:
                 return baseX + CLOCK_BAR_WIDTH / 2 - strWidth / 2;

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Mod breaking time in other dimensions, should completely ignore everything but the overworld now [#25, #29]
 - Clock bar displaying incorrect time in other dimensions
+- Clock bar time text being in wrong position when left of bar and using 24-hour clock
 - Extended periods now respect the doDaylightCycle gamerule
 - Pocket watch recipe now has a JSON file, instead of direct register (oops)
 - Miscellaneous small fixes (removes some warnings from log)
