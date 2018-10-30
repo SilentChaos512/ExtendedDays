@@ -9,11 +9,13 @@ import net.quetzi.morpheus.api.INewDayHandler;
 import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.event.TimeEvents;
 
-public class MorpheusCompat {
-    public static class NewDayHandler implements INewDayHandler {
+public final class MorpheusCompat {
+    private MorpheusCompat() {}
+
+    public static final class NewDayHandler implements INewDayHandler {
         INewDayHandler parent;
 
-        NewDayHandler(INewDayHandler parent) {
+        private NewDayHandler(INewDayHandler parent) {
             this.parent = parent;
         }
 
