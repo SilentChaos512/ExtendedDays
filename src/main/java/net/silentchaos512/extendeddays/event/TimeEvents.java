@@ -300,6 +300,9 @@ public class TimeEvents {
     }
 
     public static boolean isOverworld(World world) {
+        if (world == null || world.provider == null) {
+            return false;
+        }
         return world.provider.getDimension() == 0;
     }
 }

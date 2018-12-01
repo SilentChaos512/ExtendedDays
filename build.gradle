@@ -158,7 +158,12 @@ dependencies {
 
     // Silent Lib
     if (project.hasProperty('sl_version')) {
-        compileOnly "com.github.SilentChaos512:SilentLib:${project.sl_version}"
+        def projectSilentLib = findProject(":SilentLib")
+        print "Local Silent Lib: ${projectSilentLib} (${projectSilentLib != null ? "found" : "not found"})"
+        if (projectSilentLib != null)
+            compileOnly project(":SilentLib")
+        else
+            provided "com.github.SilentChaos512:SilentLib:${project.sl_version}"
     }
 
 //    compileOnly "com.github.lumien231:Bloodmoon:8cb71258a00dd6406f69f24113b9df9d233c4cff"
