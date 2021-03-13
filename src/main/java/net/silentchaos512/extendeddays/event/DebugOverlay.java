@@ -20,56 +20,56 @@ package net.silentchaos512.extendeddays.event;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Mod;
 import net.silentchaos512.extendeddays.ExtendedDays;
-import net.silentchaos512.extendeddays.config.Config;
+import net.silentchaos512.extendeddays.client.ClientInfo;
 import net.silentchaos512.lib.client.gui.DebugRenderOverlay;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+@Mod.EventBusSubscriber(modid = ExtendedDays.MOD_ID)
 public class DebugOverlay extends DebugRenderOverlay {
     private static final float TEXT_SCALE = 0.7f;
     private static final int SPLIT_WIDTH = 130;
     private static DebugOverlay instance;
 
-    private int lastCapacity = 5;
-
     public static void init() {
         if (instance == null) {
             instance = new DebugOverlay(); // Also registers on event bus
         } else {
-            ExtendedDays.logHelper.warn("DebugOverlay already initialized!");
-            ExtendedDays.logHelper.catching(new IllegalStateException());
+            ExtendedDays.LOGGER.warn("DebugOverlay already initialized!");
+            ExtendedDays.LOGGER.catching(new IllegalStateException());
         }
     }
 
     @Nonnull
     @Override
     public List<String> getDebugText() {
-        List<String> list = new ArrayList<>(lastCapacity);
+        List<String> list = new ArrayList<>();
 
-        World world = Minecraft.getMinecraft().world;
-        if (world == null || world.provider == null) {
+        World world = Minecraft.getInstance().world;
+        if (world == null) {
             list.add("World not found!");
         } else {
-            list.add(String.format("Time (MC, Ext)%s%d, %d %s", SPLITTER,
-                    world.getWorldTime(),
-                    TimeEvents.INSTANCE.getExtendedTime(),
-                    (TimeEvents.INSTANCE.isInExtendedPeriod(world) ? "(E)" : "")));
-            list.add(String.format("Effective Time%s%d / %d", SPLITTER,
-                    TimeEvents.INSTANCE.getCurrentTime(world),
-                    TimeEvents.INSTANCE.getTotalDayLength(world)));
-            list.add(String.format("Day/Night Length%s%d, %d", SPLITTER,
-                    TimeEvents.INSTANCE.getDaytimeLength(world),
-                    TimeEvents.INSTANCE.getNighttimeLength(world)));
-            list.add(String.format("ClientEvents#worldTime%s%d", SPLITTER,
-                    ClientEvents.worldTime));
-            list.add(String.format("Dimension%s%d, %s", SPLITTER,
-                    world.provider.getDimension(),
-                    world.provider.getDimensionType()));
+            long dayLength = TimeEvents.getTotalDayLength();
 
-            lastCapacity = list.size();
+            list.add(String.format("True Time%s%d / %d", SPLITTER,
+                    ClientInfo.trueTime % dayLength,
+                    dayLength
+            ));
+            list.add(String.format("Day/Night Length%s%d, %d", SPLITTER,
+                    TimeEvents.getDaytimeLength(),
+                    TimeEvents.getNighttimeLength()
+            ));
+            list.add(String.format("World Time%s%d (%d)", SPLITTER,
+                    world.getGameTime(),
+                    ClientInfo.trueTime
+            ));
+            list.add(String.format("Dimension%s %s", SPLITTER,
+                    world.getDimensionKey().getLocation()
+            ));
         }
         return list;
     }
@@ -81,7 +81,7 @@ public class DebugOverlay extends DebugRenderOverlay {
 
     @Override
     public boolean isHidden() {
-        return !Config.debugMode;
+        return false; //!Config.debugMode;
     }
 
     @Override

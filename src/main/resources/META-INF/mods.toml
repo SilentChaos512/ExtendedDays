@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[34,)"
+license="MIT"
+issueTrackerURL="https://github.com/SilentChaos512/ExtendedDays/issues"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/extended-days"
+logoFile="logo.png"
+#credits="Thanks for this example mod goes to Java"
+authors="SilentChaos512"
+
+[[mods]]
+    modId="extendeddays"
+    version="${file.jarVersion}"
+    displayName="Extended Days"
+    #updateJSONURL="https://raw.githubusercontent.com/SilentChaos512/ExtendedDays/1.16.x/update.json"
+    description='''
+    Hacky solution for making days longer. May be incompatible with some mods.
+    '''
+
+[[dependencies.extendeddays]]
+    modId="forge"
+    mandatory=true
+    versionRange="[34,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.extendeddays]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.3,1.17)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.extendeddays]]
+    modId="silentlib"
+    mandatory=false
+    versionRange="[4,)"
+    ordering="NONE"
+    side="BOTH"
