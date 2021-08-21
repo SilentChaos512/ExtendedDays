@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class ModItems {
     public static final RegistryObject<ItemPocketWatch> POCKET_WATCH = register("pocket_watch", () ->
-            new ItemPocketWatch(new Item.Properties().group(ItemGroup.MISC).maxStackSize(1)));
+            new ItemPocketWatch(new Item.Properties().tab(ItemGroup.TAB_MISC).stacksTo(1)));
 
     private ModItems() {}
 

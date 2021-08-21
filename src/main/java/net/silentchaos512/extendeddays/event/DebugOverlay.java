@@ -49,7 +49,7 @@ public class DebugOverlay extends DebugRenderOverlay {
     public List<String> getDebugText() {
         List<String> list = new ArrayList<>();
 
-        World world = Minecraft.getInstance().world;
+        World world = Minecraft.getInstance().level;
         if (world == null) {
             list.add("World not found!");
         } else {
@@ -68,7 +68,7 @@ public class DebugOverlay extends DebugRenderOverlay {
                     ClientInfo.trueTime
             ));
             list.add(String.format("Dimension%s %s", SPLITTER,
-                    world.getDimensionKey().getLocation()
+                    world.dimension().location()
             ));
         }
         return list;

@@ -13,6 +13,8 @@ import net.silentchaos512.extendeddays.event.ClientEvents;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.item.Item.Properties;
+
 public class ItemPocketWatch extends Item {
     public ItemPocketWatch(Properties properties) {
         super(properties);
@@ -20,13 +22,13 @@ public class ItemPocketWatch extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (worldIn.isRemote) {
+        if (worldIn.isClientSide) {
             ClientEvents.playerHasPocketWatch = true;
         }
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent("item.pocket_watch.desc"));
     }
 }

@@ -35,14 +35,12 @@ public class SetClientTimePacket {
 
     public void handle(Supplier<NetworkEvent.Context> context) {
         ClientPlayerEntity player = Minecraft.getInstance().player;
-        if (player != null) {
-            if (player.world instanceof ClientWorld) {
-                ClientWorld world = (ClientWorld) player.world;
-                ClientWorld.ClientWorldInfo info = world.getWorldInfo();
-                info.setGameTime(this.vanillaTime);
+        if (player != null && player.level instanceof ClientWorld) {
+            ClientWorld world = (ClientWorld) player.level;
+            ClientWorld.ClientWorldInfo info = world.getLevelData();
+            info.setGameTime(this.vanillaTime);
 
-                updateClientInfo();
-            }
+            updateClientInfo();
         }
         context.get().setPacketHandled(true);
     }
@@ -50,9 +48,9 @@ public class SetClientTimePacket {
     private void updateClientInfo() {
         ClientInfo.trueTime = this.trueTime;
 
-        ClientWorld world = Minecraft.getInstance().world;
+        ClientWorld world = Minecraft.getInstance().level;
         if (world != null) {
-            world.getWorldInfo().setGameTime(vanillaTime);
+            world.getLevelData().setGameTime(vanillaTime);
         }
     }
 }

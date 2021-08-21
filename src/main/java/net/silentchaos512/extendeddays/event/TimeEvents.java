@@ -40,7 +40,7 @@ public final class TimeEvents {
                 public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
                     if (cap == ExtendedTimeCapability.INSTANCE) {
                         return ExtendedTimeCapability.INSTANCE.orEmpty(cap, LazyOptional.of(() ->
-                                TIME_CAPS.computeIfAbsent(event.getObject().getDimensionKey(), key ->
+                                TIME_CAPS.computeIfAbsent(event.getObject().dimension(), key ->
                                         new ExtendedTime())));
                     }
                     return LazyOptional.empty();
@@ -90,14 +90,14 @@ public final class TimeEvents {
         long gameTime = world.getGameTime();
         long trueTime = getTotalDayLength() * gameTime / 24_000L;
         cap.setTotalTicksPassed(trueTime);
-        if (world.isRemote) {
+        if (world.isClientSide) {
             ExtendedDays.LOGGER.info("Updating true time to match new game time");
             ClientInfo.trueTime = trueTime;
         }
     }
 
     private static boolean hasFixedTime(World world) {
-        return world.getDimensionType().doesFixedTimeExist() || !world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE);
+        return world.dimensionType().hasFixedTime() || !world.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT);
     }
 
     public static long getTotalDayLength() {
@@ -114,8 +114,8 @@ public final class TimeEvents {
     }
 
     private static void setWorldTime(ServerWorld world, long vanillaTime, long trueTime) {
-        world.field_241103_E_.setDayTime(vanillaTime % 24_000L);
-        world.field_241103_E_.setGameTime(vanillaTime);
+        world.serverLevelData.setDayTime(vanillaTime % 24_000L);
+        world.serverLevelData.setGameTime(vanillaTime);
         Network.channel.send(PacketDistributor.ALL.noArg(), new SetClientTimePacket(vanillaTime, trueTime));
     }
 }
