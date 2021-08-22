@@ -1,10 +1,15 @@
 package net.silentchaos512.extendeddays.event;
 
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Direction;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DerivedWorldInfo;
+import net.minecraft.world.storage.IServerWorldInfo;
+import net.minecraft.world.storage.IWorldInfo;
+import net.minecraft.world.storage.ServerWorldInfo;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -17,7 +22,6 @@ import net.silentchaos512.extendeddays.ExtendedDays;
 import net.silentchaos512.extendeddays.capability.ExtendedTime;
 import net.silentchaos512.extendeddays.capability.ExtendedTimeCapability;
 import net.silentchaos512.extendeddays.capability.IExtendedTime;
-import net.silentchaos512.extendeddays.client.ClientInfo;
 import net.silentchaos512.extendeddays.config.Config;
 import net.silentchaos512.extendeddays.network.Network;
 import net.silentchaos512.extendeddays.network.SetClientTimePacket;
@@ -69,16 +73,20 @@ public final class TimeEvents {
         int daysPassed = (int) (trueTime / totalDayLength);
         int dayTime = (int) (trueTime % totalDayLength);
 
+        long newVanillaDayTime;
         long newVanillaTime;
         if (dayTime < getDaytimeLength()) {
-            newVanillaTime = 12_000L * dayTime / getDaytimeLength() + 24_000L * daysPassed;
+            newVanillaDayTime = 12_000L * dayTime / getDaytimeLength();
+            newVanillaTime = newVanillaDayTime + 24_000L * daysPassed;
         } else {
-            newVanillaTime = 24_000L * dayTime / getTotalDayLength() + 24_000L * daysPassed;
+            newVanillaDayTime = 24_000L * dayTime / getTotalDayLength();
+            newVanillaTime = newVanillaDayTime + 24_000L * daysPassed;
         }
 
-        long diff = Math.abs(newVanillaTime - event.world.getGameTime());
-        if (diff > 999) {
+        long diff = Math.abs(newVanillaDayTime - event.world.getDayTime());
+        if (diff > 99) {
             // Good chance the time has been altered by something (sleeping, command, etc.)
+            ExtendedDays.LOGGER.info("Updating true time to match new day time: {}", event.world.getDayTime());
             updateTrueTimeWithWorldTime(event.world, timeCapability);
         } else {
             // Update time for server and clients
@@ -87,13 +95,41 @@ public final class TimeEvents {
     }
 
     private static void updateTrueTimeWithWorldTime(World world, IExtendedTime cap) {
-        long gameTime = world.getGameTime();
-        long trueTime = getTotalDayLength() * gameTime / 24_000L;
-        cap.setTotalTicksPassed(trueTime);
-        if (world.isClientSide) {
-            ExtendedDays.LOGGER.info("Updating true time to match new game time");
-            ClientInfo.trueTime = trueTime;
+        // Update the true time based on the world time
+        long dayTime = world.getDayTime();
+        long trueTime;
+        if (dayTime % 24_000L < 12_000L) {
+            trueTime = getDaytimeLength() * dayTime / 12_000L;
+        } else {
+            trueTime = getTotalDayLength() * dayTime / 24_000L;
         }
+
+        cap.setTotalTicksPassed(trueTime);
+        setGameTime(world.getLevelData(), dayTime);
+    }
+
+    private static void setGameTime(IWorldInfo levelData, long gameTime) {
+        //noinspection ChainOfInstanceofChecks
+        if (levelData instanceof ServerWorldInfo) {
+            IServerWorldInfo serverLevelData = (ServerWorldInfo) levelData;
+//            serverLevelData.setGameTime(gameTime);
+            serverLevelData.setDayTime(gameTime);
+        } else if (levelData instanceof ClientWorld.ClientWorldInfo) {
+            ClientWorld.ClientWorldInfo clientLevelData = (ClientWorld.ClientWorldInfo) levelData;
+//            clientLevelData.setGameTime(gameTime);
+            clientLevelData.setDayTime(gameTime);
+        } else if (levelData instanceof DerivedWorldInfo) {
+            IWorldInfo wrapped = ((DerivedWorldInfo) levelData).wrapped;
+            setGameTime(wrapped, gameTime);
+        } else {
+            ExtendedDays.LOGGER.error("Unknown level data type: {}", levelData);
+        }
+    }
+
+    private static void setWorldTime(ServerWorld world, long vanillaTime, long trueTime) {
+        world.serverLevelData.setDayTime(vanillaTime % 24_000L);
+//        world.serverLevelData.setGameTime(vanillaTime);
+        Network.channel.send(PacketDistributor.ALL.noArg(), new SetClientTimePacket(vanillaTime, trueTime));
     }
 
     private static boolean hasFixedTime(World world) {
@@ -111,11 +147,5 @@ public final class TimeEvents {
 
     public static int getNighttimeLength() {
         return 1200 * Config.Common.nightLength.get();
-    }
-
-    private static void setWorldTime(ServerWorld world, long vanillaTime, long trueTime) {
-        world.serverLevelData.setDayTime(vanillaTime % 24_000L);
-        world.serverLevelData.setGameTime(vanillaTime);
-        Network.channel.send(PacketDistributor.ALL.noArg(), new SetClientTimePacket(vanillaTime, trueTime));
     }
 }

@@ -59,13 +59,13 @@ public class DebugOverlay extends DebugRenderOverlay {
                     ClientInfo.trueTime % dayLength,
                     dayLength
             ));
+            list.add(String.format("Game/Day Time%s%d, %d", SPLITTER,
+                    world.getGameTime(),
+                    world.getDayTime()
+            ));
             list.add(String.format("Day/Night Length%s%d, %d", SPLITTER,
                     TimeEvents.getDaytimeLength(),
                     TimeEvents.getNighttimeLength()
-            ));
-            list.add(String.format("World Time%s%d (%d)", SPLITTER,
-                    world.getGameTime(),
-                    ClientInfo.trueTime
             ));
             list.add(String.format("Dimension%s %s", SPLITTER,
                     world.dimension().location()
